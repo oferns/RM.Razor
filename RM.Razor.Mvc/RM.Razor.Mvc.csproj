@@ -1,0 +1,13 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp5.0</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\RM.Mvc.Models\RM.Mvc.Models.csproj" />
+    <ProjectReference Include="..\RM.Razor\RM.Razor.csproj" />
+    <ProjectReference Include="..\RM.RCL1\RM.RCL1.csproj" />
+  </ItemGroup>
+
+</Project>

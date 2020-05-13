@@ -1,0 +1,9 @@
+﻿@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h1>This Layout page is from the @this.GetType().Assembly.GetName().Name assembly and is at @this.Path</h1>
+
+@RenderBody()
+
+<h1>This Layout page is from the @this.GetType().Assembly.GetName().Name assembly and is at @this.Path</h1>
