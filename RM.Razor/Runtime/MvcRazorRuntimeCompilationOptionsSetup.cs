@@ -18,10 +18,8 @@
             if (options == null) {
                 throw new ArgumentNullException(nameof(options));
             }
-
-            // options.FileProviders.Add(new PhysicalFileProvider(Path.Combine(hostingEnvironment.ContentRootPath, "..", "VS.Mvc.Vivastreet_Com")));
+            
             options.FileProviders.Add(this.hostingEnvironment.ContentRootFileProvider);
-
         }
     }
 }

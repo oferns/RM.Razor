@@ -131,9 +131,9 @@
 
                 if (item.Descriptor?.Item is object) {
 
-
+                    var itemAssemblyName = item.Descriptor.Item.Type.Assembly.GetName().Name;
                     // If we dont have an engine for the library
-                    if (!projectEngines.TryGetValue(item.Descriptor.Item.Type.Assembly.GetName().Name, out var engine)) {
+                    if (!projectEngines.TryGetValue(itemAssemblyName, out var engine)) {
                         taskSource.SetResult(item.Descriptor);
                         return taskSource.Task;
                     }
@@ -150,7 +150,7 @@
                     
                     // Otherwise try to recompile
                     try {
-                        var descriptor = CompileAndEmit(normalizedPath, engine);
+                        var descriptor = CompileAndEmit(normalizedPath, engine, itemAssemblyName);
                         descriptor.ExpirationTokens = cacheEntryOptions.ExpirationTokens;
                         taskSource.SetResult(descriptor);
                         return taskSource.Task;
@@ -165,11 +165,12 @@
 
                 var exceptions = new List<Exception>();
 
-                foreach (var engine in projectEngines) {
+                // This should only happen with new files but we don't know where that new file is so we try each engine in reverse order
+                foreach (var engine in projectEngines.Reverse()) {
                     var file = engine.Value.FileSystem.GetItem(normalizedPath, null);
                     if (file.Exists) {
                         try {
-                            var descriptor = CompileAndEmit(normalizedPath, engine.Value);
+                            var descriptor = CompileAndEmit(normalizedPath, engine.Value, engine.Key);
                             descriptor.ExpirationTokens = cacheEntryOptions.ExpirationTokens;
                             taskSource.SetResult(descriptor);
                             return taskSource.Task;
@@ -286,7 +287,7 @@
             }
         }
 
-        protected virtual CompiledViewDescriptor CompileAndEmit(string relativePath, RazorProjectEngine engine) {
+        protected virtual CompiledViewDescriptor CompileAndEmit(string relativePath, RazorProjectEngine engine, string assemblyName) {
             var projectItem = engine.FileSystem.GetItem(relativePath, fileKind: null);
             var codeDocument = engine.Process(projectItem);
             var cSharpDocument = codeDocument.GetCSharpDocument();
@@ -298,7 +299,7 @@
                 throw new ApplicationException("Compilation Failed");
             }
 
-            var assembly = CompileAndEmit(codeDocument, cSharpDocument.GeneratedCode, engine);
+            var assembly = CompileAndEmit(codeDocument, cSharpDocument.GeneratedCode, engine, assemblyName);
 
             // Anything we compile from source will use Razor 2.1 and so should have the new metadata.
             var loader = new RazorCompiledItemLoader();
@@ -306,11 +307,11 @@
             return new CompiledViewDescriptor(item);
         }
 
-        internal Assembly CompileAndEmit(RazorCodeDocument codeDocument, string generatedCode, RazorProjectEngine engine) {
+        internal Assembly CompileAndEmit(RazorCodeDocument codeDocument, string generatedCode, RazorProjectEngine engine, string originalAssemblyName) {
             
             var startTimestamp = logger.IsEnabled(LogLevel.Debug) ? Stopwatch.GetTimestamp() : 0;
 
-            var assemblyName = Path.GetRandomFileName();
+            var assemblyName = originalAssemblyName + "." + Path.GetRandomFileName().Substring(1,3);
             var compilation = CreateCompilation(generatedCode, assemblyName);
 
             var emitOptions = csharpCompiler.EmitOptions;
