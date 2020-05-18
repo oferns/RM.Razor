@@ -25,11 +25,8 @@
         private readonly IRazorPageFactoryProvider pageFactory;
         private readonly IRazorPageActivator pageActivator;
         private readonly HtmlEncoder htmlEncoder;
-        private readonly MultiTenantRazorViewEngineOptions options;        
+        private readonly MultiTenantRazorViewEngineOptions options;
         private readonly DiagnosticListener diagnosticListener;
-
-
-        private readonly ConcurrentDictionary<string, string> OriginalViewTypeCache = new ConcurrentDictionary<string, string>();
 
 
         public MultiTenantRazorViewEngine(IHttpContextAccessor contextAccessor,
@@ -43,7 +40,7 @@
             this.pageFactory = pageFactory ?? throw new ArgumentNullException(nameof(pageFactory));
             this.pageActivator = pageActivator ?? throw new ArgumentNullException(nameof(pageActivator));
             this.htmlEncoder = htmlEncoder ?? throw new ArgumentNullException(nameof(htmlEncoder));
-            this.options = optionsAccessor?.Value ?? throw new ArgumentNullException(nameof(optionsAccessor));            
+            this.options = optionsAccessor?.Value ?? throw new ArgumentNullException(nameof(optionsAccessor));
             this.diagnosticListener = diagnosticListener ?? throw new ArgumentNullException(nameof(diagnosticListener));
 
             if (contextAccessor is null) {
@@ -326,14 +323,9 @@
                     GetViewStartPages(viewDescriptor.RelativePath, expirationTokens) :
                     Array.Empty<ViewLocationCacheItem>();
 
-                var originAssemblyName = viewDescriptor.Item.Type.Assembly.GetName().Name;
-                
-                if (this.OriginalViewTypeCache.ContainsKey(relativePath)) {
-                    originAssemblyName = OriginalViewTypeCache[relativePath];
-                }
-                
+
                 return new ViewLocationCacheResult(
-                    new ViewLocationCacheItem(factoryResult.RazorPageFactory, relativePath, originAssemblyName),
+                    new ViewLocationCacheItem(factoryResult.RazorPageFactory, relativePath),
                     viewStartPages);
             }
 
@@ -357,7 +349,7 @@
                     // Populate the viewStartPages list so that _ViewStarts appear in the order the need to be
                     // executed (closest last, furthest first). This is the reverse order in which
                     // ViewHierarchyUtility.GetViewStartLocations returns _ViewStarts.
-                    viewStartPages.Insert(0, new ViewLocationCacheItem(result.RazorPageFactory, filePath, viewDescriptor.Item.Type.Assembly.GetName().Name));
+                    viewStartPages.Insert(0, new ViewLocationCacheItem(result.RazorPageFactory, filePath));
                 }
             }
 
@@ -369,18 +361,14 @@
                 return ViewEngineResult.NotFound(viewName, result.SearchedLocations);
             }
 
-            var page = result.ViewEntry.PageFactory();
-
-            var viewStarts = new List<IRazorPage>();
-
+            var page = result.ViewEntry.PageFactory();            
             var cnt = result.ViewStartEntries.Count;
 
-            // var viewStarts = new IRazorPage[result.ViewStartEntries.Count];
+            var viewStarts = new IRazorPage[result.ViewStartEntries.Count];
+
             for (var i = 0; i < cnt; i++) {
                 var viewStartItem = result.ViewStartEntries[i];
-                if (viewStartItem.SourceAssemblyName.Equals(result.ViewEntry.SourceAssemblyName)) {
-                    viewStarts.Add(viewStartItem.PageFactory());
-                }
+                viewStarts[i] = viewStartItem.PageFactory();
             }
 
             var view = new RazorView(this, pageActivator, viewStarts, page, htmlEncoder, diagnosticListener);

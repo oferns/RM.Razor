@@ -8,13 +8,14 @@
     using System.Collections.Generic;
     using System.Linq;
     using System.Reflection;
+    using System.Security.Cryptography;
 
     public class MultiTenantViewCompilerProvider : IViewCompilerProvider {
         
         private readonly IHttpContextAccessor contextAccessor;
         private readonly MultiTenantRazorViewEngineOptions options;
         private readonly IDictionary<string, IViewCompiler> compilers = new Dictionary<string, IViewCompiler>();
-        private readonly string defaultViewLibrary;
+        
 
         public MultiTenantViewCompilerProvider(ApplicationPartManager applicationPartManager, 
                                                 IHttpContextAccessor contextAccessor,
@@ -24,57 +25,67 @@
                 throw new ArgumentNullException(nameof(applicationPartManager));
             }
 
-
             this.contextAccessor = contextAccessor ?? throw new ArgumentNullException(nameof(contextAccessor));
             this.options = optionsAccessor?.Value ?? throw new ArgumentNullException(nameof(optionsAccessor));
-
-            // TODO: Check the options.DefaultViewLibrary exists and is a Razor Class Library
-            this.defaultViewLibrary = string.IsNullOrEmpty(this.options.DefaultViewLibrary) ? $"{Assembly.GetEntryAssembly().GetName().Name}.Views" : this.options.DefaultViewLibrary;
 
             var feature = new ViewsFeature();
             applicationPartManager.PopulateFeature(feature);
                        
             var defaultViews = new List<CompiledViewDescriptor>();
 
-            foreach (var descriptor in feature.ViewDescriptors.Where(d => d.Item.Type.Assembly.GetName().Name.Equals(this.defaultViewLibrary))) {
-                if (!defaultViews.Any(v => v.RelativePath.Equals(descriptor.RelativePath))) {
+            foreach (var descriptor in feature.ViewDescriptors.Where(f => f.Item.Type.Assembly.GetName().Name.Equals(options.DefaultViewLibrary.AssemblyName, StringComparison.Ordinal))) {
+                if (!defaultViews.Exists(v => v.RelativePath.Equals(descriptor.RelativePath, StringComparison.OrdinalIgnoreCase))) {
                     defaultViews.Add(descriptor);
                 }
             }
 
-            compilers.Add(this.defaultViewLibrary, new MultiTenantViewCompiler(defaultViews));
+            compilers.Add("default", new MultiTenantViewCompiler(defaultViews));
 
-            foreach (var host in options.ViewLibraries) {
+            // A cache list of libraries and their compiled views 
+            var libraryViewList = new Dictionary<string, List<CompiledViewDescriptor>>();
 
+            foreach (var option in options.ViewLibraryConfig) {
+
+                if (compilers.ContainsKey(option.Key)) {
+                    continue;
+                }
+
+                // A list of descriptors for this option                
                 var viewDescriptors = new List<CompiledViewDescriptor>();
 
-                var hostSpecificViews = feature.ViewDescriptors.Where(d => d.Item.Type.Assembly.GetName().Name.Equals($"{host.Value}.Views"));
-
-                foreach (var view in hostSpecificViews) {
-                    if (!viewDescriptors.Any(v => v.RelativePath.Equals(view.RelativePath))) {
-                        viewDescriptors.Add(view);                                                                                                  
+                // Loop the requested libraries
+                foreach (var library in option.Value) {
+                    if (!libraryViewList.TryGetValue(library, out var liblist)){
+                        liblist = feature.ViewDescriptors.Where(d => d.Item.Type.Assembly.GetName().Name.Equals($"{library}.Views")).ToList();
                     }
 
-                }
-
-                foreach (var view in defaultViews) {
-                    if (!viewDescriptors.Any(v => v.RelativePath.Equals(view.RelativePath))) {
-                        viewDescriptors.Add(view);
+                    foreach (var descriptor in liblist) {
+                        if (viewDescriptors.Exists(v => v.RelativePath.Equals(descriptor.RelativePath, StringComparison.OrdinalIgnoreCase))) {                             
+                            continue;                        
+                        }
+                        viewDescriptors.Add(descriptor);
                     }
                 }
 
-                compilers.Add(host.Key, new MultiTenantViewCompiler(viewDescriptors));
+                // Add any missing views from the default library
+                foreach (var descriptor in defaultViews) {
+                    if (viewDescriptors.Exists(v => v.RelativePath.Equals(descriptor.RelativePath, StringComparison.OrdinalIgnoreCase))) {
+                        continue;
+                    }
+                    viewDescriptors.Add(descriptor);
+                }
+                compilers.Add(option.Key, new MultiTenantViewCompiler(viewDescriptors));
             }
         }
 
         public IViewCompiler GetCompiler() {
-            if (contextAccessor.HttpContext.Items.TryGetValue(this.options.HttpContextItemsKey, out var host) && !string.IsNullOrEmpty(host?.ToString())) {
-                var hostname = host.ToString();
-                if (compilers.ContainsKey(hostname)) {
-                    return compilers[hostname];
+            if (contextAccessor.HttpContext.Items.TryGetValue(this.options.HttpContextItemsKey, out var keyValue) && !string.IsNullOrEmpty(keyValue?.ToString())) {
+                var keyValueString = keyValue.ToString();
+                if (compilers.ContainsKey(keyValueString)) {
+                    return compilers[keyValueString];
                 }
             }
-            return compilers[this.defaultViewLibrary];
+            return compilers["default"];
         }
     }
 }

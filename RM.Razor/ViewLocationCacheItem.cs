@@ -12,17 +12,15 @@ namespace RM.Razor {
         /// </summary>
         /// <param name="razorPageFactory">The <see cref="IRazorPage"/> factory.</param>
         /// <param name="location">The application relative path of the <see cref="IRazorPage"/>.</param>
-        public ViewLocationCacheItem(Func<IRazorPage> razorPageFactory, string location, string sourceAssemblyName) {
+        public ViewLocationCacheItem(Func<IRazorPage> razorPageFactory, string location) {
             PageFactory = razorPageFactory;
             Location = location;
-            SourceAssemblyName = sourceAssemblyName;
         }
 
         /// <summary>
         /// Gets the application relative path of the <see cref="IRazorPage"/>
         /// </summary>
         public string Location { get; }
-        public string SourceAssemblyName { get; }
 
         /// <summary>
         /// Gets the <see cref="IRazorPage"/> factory.

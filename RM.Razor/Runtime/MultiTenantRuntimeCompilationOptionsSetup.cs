@@ -20,7 +20,7 @@
                 throw new ArgumentNullException(nameof(options));
             }
 
-            var assembly = Assembly.GetEntryAssembly().GetName().Name + ".Views";
+            var assembly = Assembly.GetEntryAssembly().GetName().Name;
 
             var defaultoptions = new MvcRazorRuntimeCompilationOptions();
             defaultoptions.FileProviders.Add(this.hostingEnvironment.ContentRootFileProvider);

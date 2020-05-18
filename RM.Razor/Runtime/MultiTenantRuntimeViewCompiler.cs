@@ -127,13 +127,19 @@
 
             // Now the lock has been released so we can do more expensive processing.
             if (item.SupportsCompilation) {
-                Debug.Assert(taskSource != null);
+                Debug.Assert(taskSource is object);
 
-                if (item.Descriptor?.Item != null) {
-                    var engine = projectEngines[item.Descriptor?.Item.Type.Assembly.GetName().Name];
+                if (item.Descriptor?.Item is object) {
+
+
+                    // If we dont have an engine for the library
+                    if (!projectEngines.TryGetValue(item.Descriptor.Item.Type.Assembly.GetName().Name, out var engine)) {
+                        taskSource.SetResult(item.Descriptor);
+                        return taskSource.Task;
+                    }
 
                     // If the item has checksums to validate, we should also have a precompiled view.
-                    
+
                     // If nothing changed serve that mofo
                     if (ChecksumValidator.IsItemValid(engine.FileSystem, item.Descriptor.Item)) {
                         Debug.Assert(item.Descriptor != null);
@@ -151,6 +157,7 @@
                     } catch (Exception ex) {
                         logger.LogError(ex, "Razor blowup");
                         taskSource.SetException(ex);
+                        return taskSource.Task;
                     }
                 }
 
@@ -266,8 +273,6 @@
         }
 
         private void GetChangeTokensFromImports(IList<IChangeToken> expirationTokens, RazorProjectItem projectItem) {
-            // OK this means we can do compilation. For now let's just identify the other files we need to watch
-            // so we can create the cache entry. Compilation will happen after we release the lock.
 
             foreach (var engine in this.projectEngines) {
                 var importFeature = engine.Value.ProjectFeatures.OfType<IImportProjectFeature>().ToArray();

@@ -44,8 +44,7 @@ namespace RM.Razor.Mvc {
 
             app.UseRouting();
 
-            app.UseAuthorization();
-
+            app.UseAuthorization();                                                   
 
             app.UseMiddleware<HostBasedViewLibrarySelectorMiddleware>();
 
