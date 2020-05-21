@@ -47,6 +47,8 @@
 
             foreach (var option in options.ViewLibraryConfig) {
 
+                var optionEngines = new Dictionary<string, RazorProjectEngine>();
+
                 if (compilers.ContainsKey(option.Key)) {
                     continue;
                 }
@@ -56,6 +58,12 @@
 
                 // Loop the requested libraries
                 foreach (var library in option.Value) {
+                    if (razorProjectEngines.TryGetValue(library + ".Views", out var engine)){
+                        if (!optionEngines.ContainsKey(library)) {
+                            optionEngines.Add(library, engine);
+                        }                    
+                    }
+                    
                     if (!libraryViewList.TryGetValue(library, out var liblist)) {
                         liblist = feature.ViewDescriptors.Where(d => d.Item.Type.Assembly.GetName().Name.Equals($"{library}.Views")).ToList();
                     }
@@ -75,7 +83,8 @@
                     }
                     viewDescriptors.Add(descriptor);
                 }
-                compilers.Add(option.Key, new MultiTenantRuntimeViewCompiler(razorProjectEngines, csharpCompiler, viewDescriptors, logger));
+
+                compilers.Add(option.Key, new MultiTenantRuntimeViewCompiler(optionEngines, csharpCompiler, viewDescriptors, logger));
             }
 
         }

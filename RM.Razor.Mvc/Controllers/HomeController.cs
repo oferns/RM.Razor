@@ -6,7 +6,8 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using RM.Razor.Mvc.Middleware;
-using RM.Razor.Mvc.Models;
+using RM.Mvc.Models;
+using Microsoft.Net.Http.Headers;
 
 namespace RM.Razor.Mvc.Controllers {
     public class HomeController : Controller {
@@ -25,16 +26,16 @@ namespace RM.Razor.Mvc.Controllers {
         }
 
 #if DEBUG
-        public IActionResult ChangeHost(string hostName) {
+        public IActionResult ChangeConfig(string configName) {
 
-            ControllerContext.HttpContext.Response.Cookies.Append(CookieBasedViewLibrarySelectorMiddleware.CookieKey, hostName);
-            
-            var referer = "/";
+            ControllerContext.HttpContext.Response.Cookies.Append(CookieBasedViewLibrarySelectorMiddleware.CookieKey, configName);
 
-            if (Url.IsLocalUrl(ControllerContext.HttpContext.Request.Headers["Referer"])){
-                referer = ControllerContext.HttpContext.Request.Headers["Referer"];
+
+            if (!ControllerContext.HttpContext.Request.Headers.TryGetValue(HeaderNames.Referer, out var referrer)) {
+                referrer = "/";
             }
-            return Redirect(referer);        
+
+            return Redirect(referrer);        
         }
 #endif
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]

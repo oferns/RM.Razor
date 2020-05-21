@@ -21,7 +21,6 @@
 
     public class MultiTenantRuntimeViewCompiler : IViewCompiler {
 
-
         private readonly Dictionary<string, CompiledViewDescriptor> precompiledViews = new Dictionary<string, CompiledViewDescriptor>();
 
         private readonly IMemoryCache cache = new MemoryCache(new MemoryCacheOptions());
@@ -104,6 +103,7 @@
 
                 if (precompiledViews.TryGetValue(normalizedPath, out var precompiledView)) {
                     item = CreatePrecompiledWorkItem(normalizedPath, precompiledView);
+                    precompiledViews.Remove(normalizedPath);
                 } else {
                     item = CreateRuntimeCompilationWorkItem(normalizedPath);
                 }
@@ -165,8 +165,8 @@
 
                 var exceptions = new List<Exception>();
 
-                // This should only happen with new files but we don't know where that new file is so we try each engine in reverse order
-                foreach (var engine in projectEngines.Reverse()) {
+                
+                foreach (var engine in projectEngines) {
                     var file = engine.Value.FileSystem.GetItem(normalizedPath, null);
                     if (file.Exists) {
                         try {

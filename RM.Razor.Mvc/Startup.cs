@@ -28,34 +28,36 @@ namespace RM.Razor.Mvc {
             services.AddMultiTenantRuntimeCompilation(environment);
 #endif
             services.AddControllersWithViews();
+            
+            services.AddRazorPages();
 
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env) {
+        public void Configure(IApplicationBuilder app, IHostEnvironment env) {
+
+            app.UseMiddleware<CookieBasedViewLibrarySelectorMiddleware>();
+            app.UseMiddleware<HostBasedViewLibrarySelectorMiddleware>();
+
             if (env.IsDevelopment()) {
                 app.UseDeveloperExceptionPage();
             } else {
                 app.UseExceptionHandler("/Home/Error");
             }
 
-            // app.UseStaticFiles();  < instead of this
-            app.UseMultiTenantStaticFiles(); // <- use this
-
+            app.UseStaticFiles();  
+                          
             app.UseRouting();
 
             app.UseAuthorization();                                                   
 
-            app.UseMiddleware<HostBasedViewLibrarySelectorMiddleware>();
-
-#if DEBUG
-            app.UseMiddleware<CookieBasedViewLibrarySelectorMiddleware>();
-#endif
 
             app.UseEndpoints(endpoints => {
                 endpoints.MapControllerRoute(
                     name: "default",
                     pattern: "{controller=Home}/{action=Index}/{id?}");
+
+                endpoints.MapRazorPages();
             });
         }
     }

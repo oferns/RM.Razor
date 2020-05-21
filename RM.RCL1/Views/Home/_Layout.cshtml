@@ -2,9 +2,12 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<h1>This Layout page is from the @this.GetType().Assembly.GetName().Name assembly and is at @this.Path</h1>
-<h2> Cock cock coc</h2>
+<p>
+    <strong><i>@this.Path</i> (@this.GetType().Assembly.GetName().Name)</strong>
+</p>
 
 @RenderBody()
 
-<h1>This Layout page is from the @this.GetType().Assembly.GetName().Name assembly and is at @this.Path</h1>
+<p>
+    <strong><i>@this.Path</i> (@this.GetType().Assembly.GetName().Name)</strong>
+</p>

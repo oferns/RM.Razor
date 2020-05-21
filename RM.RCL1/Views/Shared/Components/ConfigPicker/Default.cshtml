@@ -1,0 +1,17 @@
+﻿@model MultiTenantRazorViewEngineOptions
+
+<p>
+    <strong><i>@this.Path</i> (@this.GetType().Assembly.GetName().Name)</strong>
+</p>
+
+<form asp-action="ChangeConfig" asp-controller="Home" method="get">
+    <select name="configName">
+        <option title="default" value="default" selected="@(ViewContext.HttpContext.Request.Cookies["vl"] is null)">default</option>
+
+        @foreach (var config in Model.ViewLibraryConfig) {
+            <option title="@config.Key" value="@config.Key" selected="@config.Key.Equals(ViewContext.HttpContext.Request.Cookies["vl"]?.ToString())">@config.Key</option>
+
+        }
+    </select>
+    <button type="submit" asp-action="ChangeConfig" asp-controller="Home">Submit</button>
+</form>

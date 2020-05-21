@@ -1,4 +1,4 @@
-﻿namespace RM.Razor.Mvc.Models {
+﻿namespace RM.Mvc.Models {
     public class ErrorViewModel {
         public string RequestId { get; set; }
 

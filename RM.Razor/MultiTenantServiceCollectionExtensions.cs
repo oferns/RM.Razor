@@ -1,8 +1,10 @@
 ﻿namespace RM.Razor {
+    using Microsoft.AspNetCore.Builder;
     using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc.Razor;
     using Microsoft.AspNetCore.Mvc.Razor.Compilation;
     using Microsoft.AspNetCore.Mvc.Razor.Extensions;
+    using Microsoft.AspNetCore.Mvc.RazorPages.Infrastructure;
     using Microsoft.AspNetCore.Razor.Language;
     using Microsoft.CodeAnalysis.Razor;
     using Microsoft.Extensions.DependencyInjection;
@@ -21,6 +23,8 @@
         public static IServiceCollection AddMultiTenantViewEgine(this IServiceCollection services) {
 
             services.TryAddEnumerable(ServiceDescriptor.Transient<IConfigureOptions<MultiTenantRazorViewEngineOptions>, MultiTenantRazorViewEngineOptionsSetup>());
+            services.TryAddEnumerable(ServiceDescriptor.Transient<IPostConfigureOptions<StaticFileOptions>, MuiltiTenantStaticFileOptionsPostConfigure>());
+
             return services
                 .AddSingleton<IRazorViewEngine, MultiTenantRazorViewEngine>()
                 .AddSingleton<IViewCompilerProvider, MultiTenantViewCompilerProvider>();
@@ -28,6 +32,9 @@
 
         // Adds Runtime Compilation support
         public static IServiceCollection AddMultiTenantRuntimeCompilation(this IServiceCollection services, IHostEnvironment environment) {
+
+            services.AddSingleton<MultiTenantActionEndpointFactory>();
+            services.AddSingleton<PageLoader, MultiTenantRazorPageLoader>();
 
             services.AddTransient<IRazorPageFactoryProvider, MultiTenantRuntimePageFactoryProvider>();
             services.AddSingleton<IViewCompilerProvider, MultiTenantRuntimeViewCompilerProvider>();
@@ -61,13 +68,13 @@
                         // TODO: Invalid config should have been picked up here
                         continue;
                     }
-                                        
+
                     if (!string.IsNullOrEmpty(viewLibrary.PathRelativeToContentRoot)) {
                         var path = Path.GetFullPath(Path.Combine(environment.ContentRootPath, viewLibrary.PathRelativeToContentRoot));
                         var engine = GetEngine(csharpCompiler, referenceManager, new FileProviderRazorProjectFileSystem(path), viewLibrary.AssemblyName);
                         dictionary.Add($"{viewLibrary.AssemblyName}.Views", engine);
                     }
-                }                                        
+                }
                 return dictionary;
             });
 
@@ -80,7 +87,7 @@
                                                     RazorReferenceManager referenceManager,
                                                     FileProviderRazorProjectFileSystem projectFileSystem,
                                                     string assemblyName) {
-                        
+
             var engineConfig = RazorConfiguration.Create(RazorLanguageVersion.Latest, assemblyName, Array.Empty<RazorExtension>());
 
             return RazorProjectEngine.Create(engineConfig, projectFileSystem, builder => {

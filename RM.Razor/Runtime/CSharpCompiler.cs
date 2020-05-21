@@ -16,14 +16,14 @@ namespace RM.Razor.Runtime {
 
     public class CSharpCompiler {
         private readonly RazorReferenceManager _referenceManager;
-        private readonly IWebHostEnvironment _hostingEnvironment;
+        private readonly IHostEnvironment _hostingEnvironment;
         private bool _optionsInitialized;
         private CSharpParseOptions _parseOptions;
         private CSharpCompilationOptions _compilationOptions;
         private EmitOptions _emitOptions;
         private bool _emitPdb;
 
-        public CSharpCompiler(RazorReferenceManager manager, IWebHostEnvironment hostingEnvironment) {
+        public CSharpCompiler(RazorReferenceManager manager, IHostEnvironment hostingEnvironment) {
             _referenceManager = manager ?? throw new ArgumentNullException(nameof(manager));
             _hostingEnvironment = hostingEnvironment ?? throw new ArgumentNullException(nameof(hostingEnvironment));
         }
@@ -129,7 +129,7 @@ namespace RM.Razor.Runtime {
         }
 
         private static CSharpCompilationOptions GetCompilationOptions(
-            IWebHostEnvironment hostingEnvironment,
+            IHostEnvironment hostingEnvironment,
             DependencyContextCompilationOptions dependencyContextOptions) {
             var csharpCompilationOptions = new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary);
 
@@ -170,7 +170,7 @@ namespace RM.Razor.Runtime {
         }
 
         private static CSharpParseOptions GetParseOptions(
-            IWebHostEnvironment hostingEnvironment,
+            IHostEnvironment hostingEnvironment,
             DependencyContextCompilationOptions dependencyContextOptions) {
             var configurationSymbol = hostingEnvironment.IsDevelopment() ? "DEBUG" : "RELEASE";
             var defines = dependencyContextOptions.Defines.Concat(new[] { configurationSymbol });

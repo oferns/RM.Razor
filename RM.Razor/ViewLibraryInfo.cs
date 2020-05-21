@@ -16,5 +16,12 @@
         /// </summary>
         public string PathRelativeToContentRoot { get; set; }
 
+
+        /// <summary>
+        /// If this is set then an embedded file provider is added to the pipeline 
+        /// to serve static files from this ViewLibrary       
+        /// </summary>
+        public string EmbeddedStaticFilePath { get; set; }
+
     }
 }
