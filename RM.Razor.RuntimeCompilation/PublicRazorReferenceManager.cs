@@ -1,8 +1,7 @@
 ﻿/// <summary>
 /// A public version of src/Mvc/Mvc.Razor.RuntimeCompilation/src/RazorReferenceManager.cs
 /// </summary>
-/// 
-namespace RM.Razor.Runtime {
+namespace RM.Razor.RuntimeCompilation {
 
     using Microsoft.AspNetCore.Mvc.ApplicationParts;
     using Microsoft.AspNetCore.Mvc.Razor.RuntimeCompilation;
@@ -14,14 +13,14 @@ namespace RM.Razor.Runtime {
     using System.Reflection.PortableExecutable;
     using System.Threading;
 
-    public class RazorReferenceManager {
+    public class PublicRazorReferenceManager {
         private readonly ApplicationPartManager _partManager;
         private readonly MvcRazorRuntimeCompilationOptions _options;
         private object _compilationReferencesLock = new object();
         private bool _compilationReferencesInitialized;
         private IReadOnlyList<MetadataReference> _compilationReferences;
 
-        public RazorReferenceManager(
+        public PublicRazorReferenceManager(
             ApplicationPartManager partManager,
             IOptions<MvcRazorRuntimeCompilationOptions> options) {
             _partManager = partManager;

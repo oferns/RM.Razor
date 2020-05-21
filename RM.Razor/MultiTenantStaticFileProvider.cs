@@ -1,12 +1,9 @@
 ﻿namespace RM.Razor {
-
-    using Microsoft.AspNetCore.Builder;
     using Microsoft.AspNetCore.Http;
     using Microsoft.Extensions.FileProviders;
     using Microsoft.Extensions.Options;
     using Microsoft.Extensions.Primitives;
     using System;
-    using System.Collections;
     using System.Collections.Generic;
 
     public class MultiTenantStaticFileProvider : IFileProvider {

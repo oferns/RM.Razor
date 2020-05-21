@@ -36,7 +36,7 @@
             services.AddSingleton<MultiTenantActionEndpointFactory>();
             services.AddSingleton<PageLoader, MultiTenantRazorPageLoader>();
 
-            services.AddTransient<IRazorPageFactoryProvider, MultiTenantRuntimePageFactoryProvider>();
+           // services.AddTransient<IRazorPageFactoryProvider, MultiTenantRuntimePageFactoryProvider>();
             services.AddSingleton<IViewCompilerProvider, MultiTenantRuntimeViewCompilerProvider>();
             services.AddSingleton<IRazorViewEngine, MultiTenantRazorViewEngine>();
             services.AddSingleton<RazorReferenceManager>();

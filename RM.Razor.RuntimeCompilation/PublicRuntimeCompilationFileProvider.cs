@@ -1,0 +1,44 @@
+﻿/// <summary>
+/// Public version of src/Mvc/Mvc.Razor.RuntimeCompilation/src/RuntimeCompilationFileProvider.cs
+/// </summary>
+namespace RM.Razor.RuntimeCompilation {
+    using System;
+    using Microsoft.AspNetCore.Mvc.Razor.RuntimeCompilation;
+    using Microsoft.Extensions.FileProviders;
+    using Microsoft.Extensions.Options;
+
+    public class PublicRuntimeCompilationFileProvider {
+        private readonly MvcRazorRuntimeCompilationOptions _options;
+        private IFileProvider _compositeFileProvider;
+
+        public PublicRuntimeCompilationFileProvider(IOptions<MvcRazorRuntimeCompilationOptions> options) {
+            if (options == null) {
+                throw new ArgumentNullException(nameof(options));
+            }
+
+            _options = options.Value;
+        }
+
+        public IFileProvider FileProvider {
+            get {
+                if (_compositeFileProvider == null) {
+                    _compositeFileProvider = GetCompositeFileProvider(_options);
+                }
+
+                return _compositeFileProvider;
+            }
+        }
+
+        private static IFileProvider GetCompositeFileProvider(MvcRazorRuntimeCompilationOptions options) {
+            var fileProviders = options.FileProviders;
+            if (fileProviders.Count == 0) {
+                var message = $"'{typeof(MvcRazorRuntimeCompilationOptions).FullName}.{nameof(MvcRazorRuntimeCompilationOptions.FileProviders)}' must not be empty. At least one '{typeof(IFileProvider).FullName}' is required to locate a view for rendering.";
+                throw new InvalidOperationException(message);
+            } else if (fileProviders.Count == 1) {
+                return fileProviders[0];
+            }
+
+            return new CompositeFileProvider(fileProviders);
+        }
+    }
+}

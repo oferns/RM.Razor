@@ -4,6 +4,7 @@
     <strong><i>@this.Path</i> (@this.GetType().Assembly.GetName().Name)</strong>
 </p>
 
+<h1>Hello!</h1>
 <form asp-action="ChangeConfig" asp-controller="Home" method="get">
     <select name="configName">
         <option title="default" value="default" selected="@(ViewContext.HttpContext.Request.Cookies["vl"] is null)">default</option>
