@@ -11,18 +11,25 @@
 
     public class MultiTenantStaticFileProvider : IFileProvider {
         private readonly IHttpContextAccessor contextAccessor;
-        private readonly IDictionary<string, EmbeddedFileProvider> embeddedProviders;
-        private readonly StaticFileOptions originalOptions;
+        private readonly IDictionary<string, ManifestEmbeddedFileProvider> embeddedProviders;
+        private readonly IFileProvider originalProvider;
         private readonly MultiTenantRazorViewEngineOptions viewOptions;
 
         public MultiTenantStaticFileProvider(IHttpContextAccessor contextAccessor, 
-                                            IDictionary<string, EmbeddedFileProvider> embeddedProviders,
                                             IOptions<MultiTenantRazorViewEngineOptions> viewOptions, 
-                                            IOptions<StaticFileOptions> originalOptions) {
-            this.contextAccessor = contextAccessor ?? throw new ArgumentNullException(nameof(contextAccessor));
-            this.embeddedProviders = embeddedProviders ?? throw new ArgumentNullException(nameof(embeddedProviders));
-            this.originalOptions = originalOptions?.Value ?? throw new ArgumentNullException(nameof(originalOptions));
+                                            IFileProvider originalProvider) {
+            this.contextAccessor = contextAccessor ?? throw new ArgumentNullException(nameof(contextAccessor));            
+            this.originalProvider = originalProvider ?? throw new ArgumentNullException(nameof(originalProvider));
             this.viewOptions = viewOptions?.Value ?? throw new ArgumentNullException(nameof(viewOptions));
+
+            this.embeddedProviders = new Dictionary<string, ManifestEmbeddedFileProvider>();
+            
+            foreach (var library in this.viewOptions.ViewLibraries) {
+                if (!string.IsNullOrEmpty(library.EmbeddedStaticFilePath)) {
+                    var assembly = AppDomain.CurrentDomain.EnsureAssembly(library.AssemblyName);
+                    embeddedProviders.Add(library.AssemblyName, new ManifestEmbeddedFileProvider(assembly, library.EmbeddedStaticFilePath));
+                }            
+            }
         }
 
         public IDirectoryContents GetDirectoryContents(string subpath) {
@@ -36,7 +43,7 @@
                     }                    
                 }
             }
-            return this.originalOptions.FileProvider.GetDirectoryContents(subpath);
+            return this.originalProvider.GetDirectoryContents(subpath);
         }
 
         public IFileInfo GetFileInfo(string subpath) {
@@ -52,11 +59,11 @@
                     }
                 }
             }
-            return this.originalOptions.FileProvider.GetFileInfo(subpath);
+            return this.originalProvider.GetFileInfo(subpath);
         }
 
         public IChangeToken Watch(string filter) {
-            return this.originalOptions.FileProvider.Watch(filter);
+            return this.originalProvider.Watch(filter);
         }
     }
 }

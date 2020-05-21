@@ -24,7 +24,7 @@
 
             services.TryAddEnumerable(ServiceDescriptor.Transient<IConfigureOptions<MultiTenantRazorViewEngineOptions>, MultiTenantRazorViewEngineOptionsSetup>());
             services.TryAddEnumerable(ServiceDescriptor.Transient<IPostConfigureOptions<StaticFileOptions>, MuiltiTenantStaticFileOptionsPostConfigure>());
-
+            
             return services
                 .AddSingleton<IRazorViewEngine, MultiTenantRazorViewEngine>()
                 .AddSingleton<IViewCompilerProvider, MultiTenantViewCompilerProvider>();
