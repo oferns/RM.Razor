@@ -22,7 +22,7 @@
 
     public class RuntimeMultiViewCompiler : IViewCompiler {
 
-        private readonly Dictionary<string, CompiledViewDescriptor> precompiledViews = new Dictionary<string, CompiledViewDescriptor>();
+        private readonly Dictionary<string, CompiledViewDescriptor> precompiledViews = new Dictionary<string, CompiledViewDescriptor>(StringComparer.OrdinalIgnoreCase);
 
         private readonly IMemoryCache cache = new MemoryCache(new MemoryCacheOptions());
         private readonly object cacheLock = new object();
@@ -104,7 +104,7 @@
 
                 if (precompiledViews.TryGetValue(normalizedPath, out var precompiledView)) {
                     item = CreatePrecompiledWorkItem(normalizedPath, precompiledView);
-                    precompiledViews.Remove(normalizedPath);
+                   // precompiledViews.Remove(normalizedPath);
                 } else {
                     item = CreateRuntimeCompilationWorkItem(normalizedPath);
                 }
@@ -130,13 +130,16 @@
             if (item.SupportsCompilation) {
                 Debug.Assert(taskSource is object);
 
-                if (item.Descriptor?.Item is object) {
+                if (item.Descriptor?.Item is object ) {
 
                     var itemAssemblyName = item.Descriptor.Item.Type.Assembly.GetName().Name;
                     // If we dont have an engine for the library
                     if (!projectEngines.TryGetValue(itemAssemblyName, out var engine)) {
-                        taskSource.SetResult(item.Descriptor);
-                        return taskSource.Task;
+                        engine = projectEngines.First().Value;
+                        if (PublicChecksumValidator.IsItemValid(engine.FileSystem, item.Descriptor.Item)) {
+                            taskSource.SetResult(item.Descriptor);
+                            return taskSource.Task;
+                        }
                     }
 
                     // If the item has checksums to validate, we should also have a precompiled view.

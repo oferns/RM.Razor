@@ -817,7 +817,7 @@ this should fail";
 
         private static PublicRazorReferenceManager CreateReferenceManager() {
             var applicationPartManager = new ApplicationPartManager();
-            var assembly = typeof(PublicRazorReferenceManager).Assembly;
+            var assembly = typeof(MultiRuntimeViewCompilerTests).Assembly;
             applicationPartManager.ApplicationParts.Add(new AssemblyPart(assembly));
 
             return new PublicRazorReferenceManager(applicationPartManager, Options.Create(new MvcRazorRuntimeCompilationOptions()));

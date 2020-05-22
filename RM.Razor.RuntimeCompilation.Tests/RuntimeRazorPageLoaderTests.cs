@@ -1,9 +1,6 @@
 ﻿
 
 namespace RM.Razor.RuntimeCompilation.Tests {
-    using System;
-    using System.Reflection;
-    using System.Threading.Tasks;
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.AspNetCore.Mvc.Abstractions;
     using Microsoft.AspNetCore.Mvc.ApplicationModels;
@@ -11,20 +8,32 @@ namespace RM.Razor.RuntimeCompilation.Tests {
     using Microsoft.AspNetCore.Mvc.Razor.Compilation;
     using Microsoft.AspNetCore.Mvc.RazorPages;
     using Microsoft.AspNetCore.Mvc.Routing;
-    using Microsoft.AspNetCore.Razor.Hosting;
     using Microsoft.AspNetCore.Routing.Patterns;
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Options;
     using Moq;
+    using System;
+    using System.Reflection;
+    using System.Threading.Tasks;
     using Xunit;
 
     public class RuntimeRazorPageLoaderTests {
-        private readonly IOptions<RazorPagesOptions> RazorPagesOptions = Options.Create(new RazorPagesOptions() /*{ Conventions = new PageConventionCollection(Mock.Of<IServiceProvider>()) }*/);
+        private readonly IOptions<RazorPagesOptions> RazorPagesOptions; // = Options.Create(new RazorPagesOptions() { Conventions = new PageConventionCollection(Mock.Of<IServiceProvider>()) });
         private readonly IActionDescriptorCollectionProvider ActionDescriptorCollectionProvider;
 
         public RuntimeRazorPageLoaderTests() {
             var actionDescriptors = new ActionDescriptorCollection(Array.Empty<ActionDescriptor>(), 1);
             ActionDescriptorCollectionProvider = Mock.Of<IActionDescriptorCollectionProvider>(v => v.ActionDescriptors == actionDescriptors);
+            
+            // The f*cking constructor is internal..
+            var conventions = Activator.CreateInstance(typeof(PageConventionCollection), BindingFlags.NonPublic | BindingFlags.Instance, null, new object[] { Mock.Of<IServiceProvider>() }, null);
+
+            // so is the property setter FFS.
+            var options = new RazorPagesOptions();
+            typeof(RazorPagesOptions).GetProperty("Conventions", BindingFlags.Public | BindingFlags.Instance).SetValue(options, conventions);
+
+            RazorPagesOptions = Options.Create(options);
+
         }
 
         [Fact]
@@ -202,8 +211,10 @@ namespace RM.Razor.RuntimeCompilation.Tests {
             provider2.Verify();
         }
 
+
+        // We want all the caching to happen in the ViewCompiler coz then our hotload works
         [Fact]
-        public async Task LoadAsync_CachesResults() {
+        public async Task LoadAsync_DoesNotCacheResults() {
             // Arrange
             var descriptor = new PageActionDescriptor() {
                 AttributeRouteInfo = new AttributeRouteInfo() {
@@ -249,7 +260,7 @@ namespace RM.Razor.RuntimeCompilation.Tests {
             var result2 = await loader.LoadAsync(descriptor);
 
             // Assert
-            Assert.Same(result1, result2);
+            Assert.NotSame(result1.Id, result2.Id);
         }
 
         [Fact]
