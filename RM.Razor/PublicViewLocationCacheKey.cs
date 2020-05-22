@@ -120,7 +120,7 @@ namespace RM.Razor {
 
         /// <inheritdoc />
         public override int GetHashCode() {
-            var hashCodeCombiner = HashCodeCombiner.Start();
+            var hashCodeCombiner = PublicHashCodeCombiner.Start();
             hashCodeCombiner.Add(IsMainPage ? 1 : 0);
             hashCodeCombiner.Add(ViewName, StringComparer.Ordinal);
             hashCodeCombiner.Add(ControllerName, StringComparer.Ordinal);

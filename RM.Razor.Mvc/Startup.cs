@@ -25,9 +25,9 @@ namespace RM.Razor.Mvc {
 
             services.Configure<RazorMultiViewEngineOptions>(Configuration.GetSection("MultiTenantRazorViewEngineOptions"));
 
-            services.AddMultiTenantViewEgine();
+            services.AddMultiViewEngine();
 #if DEBUG
-            services.AddMultiTenantRuntimeCompilation(environment);
+            // services.AddMultiTenantRuntimeCompilation(environment);
 #endif
             services.AddControllersWithViews();
             

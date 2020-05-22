@@ -8,7 +8,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <!--<None Include="xunit.runner.json" CopyToOutputDirectory="PreserveNewest" />-->
+    <None Include="xunit.runner.json" CopyToOutputDirectory="PreserveNewest" />
     <Compile Include="$(SharedSourceRoot)Razor\**\*.cs" />
   </ItemGroup>
   

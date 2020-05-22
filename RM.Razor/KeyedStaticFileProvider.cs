@@ -6,13 +6,13 @@
     using System;
     using System.Collections.Generic;
 
-    public class MultiTenantStaticFileProvider : IFileProvider {
+    public class KeyedStaticFileProvider : IFileProvider {
         private readonly IHttpContextAccessor contextAccessor;
         private readonly IDictionary<string, ManifestEmbeddedFileProvider> embeddedProviders;
         private readonly IFileProvider originalProvider;
         private readonly RazorMultiViewEngineOptions viewOptions;
 
-        public MultiTenantStaticFileProvider(IHttpContextAccessor contextAccessor, 
+        public KeyedStaticFileProvider(IHttpContextAccessor contextAccessor, 
                                             IOptions<RazorMultiViewEngineOptions> viewOptions, 
                                             IFileProvider originalProvider) {
             this.contextAccessor = contextAccessor ?? throw new ArgumentNullException(nameof(contextAccessor));            

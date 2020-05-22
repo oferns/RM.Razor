@@ -7,17 +7,15 @@
     using System;
     using System.Collections.Generic;
     using System.Linq;
-    using System.Reflection;
-    using System.Security.Cryptography;
 
-    public class MultiTenantViewCompilerProvider : IViewCompilerProvider {
+    public class RazorMultiViewCompilerProvider : IViewCompilerProvider {
         
         private readonly IHttpContextAccessor contextAccessor;
         private readonly RazorMultiViewEngineOptions options;
         private readonly IDictionary<string, IViewCompiler> compilers = new Dictionary<string, IViewCompiler>();
         
 
-        public MultiTenantViewCompilerProvider(ApplicationPartManager applicationPartManager, 
+        public RazorMultiViewCompilerProvider(ApplicationPartManager applicationPartManager, 
                                                 IHttpContextAccessor contextAccessor,
                                                 IOptions<RazorMultiViewEngineOptions> optionsAccessor) {
 
@@ -39,7 +37,7 @@
                 }
             }
 
-            compilers.Add("default", new MultiTenantViewCompiler(defaultViews));
+            compilers.Add("default", new RazorMultiViewCompiler(defaultViews));
 
             // A cache list of libraries and their compiled views 
             var libraryViewList = new Dictionary<string, List<CompiledViewDescriptor>>();
@@ -74,7 +72,7 @@
                     }
                     viewDescriptors.Add(descriptor);
                 }
-                compilers.Add(option.Key, new MultiTenantViewCompiler(viewDescriptors));
+                compilers.Add(option.Key, new RazorMultiViewCompiler(viewDescriptors));
             }
         }
 

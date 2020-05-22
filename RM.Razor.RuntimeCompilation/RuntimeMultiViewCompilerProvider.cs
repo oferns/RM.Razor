@@ -42,7 +42,7 @@ namespace RM.Razor.RuntimeCompilation {
                 }
             }
 
-            compilers.Add("default", new MultiTenantViewCompiler(defaultViews));
+            compilers.Add("default", new RazorMultiViewCompiler(defaultViews));
 
             // A cache list of libraries and their compiled views 
             var libraryViewList = new Dictionary<string, List<CompiledViewDescriptor>>();

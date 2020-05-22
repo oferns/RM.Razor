@@ -3,7 +3,7 @@
     using System.Collections.Generic;
     using System.Runtime.CompilerServices;
 
-    public struct HashCodeCombiner {
+    public struct PublicHashCodeCombiner {
         private long _combinedHash64;
 
         public int CombinedHash {
@@ -12,7 +12,7 @@
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private HashCodeCombiner(long seed) {
+        private PublicHashCodeCombiner(long seed) {
             _combinedHash64 = seed;
         }
 
@@ -31,7 +31,7 @@
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static implicit operator int(HashCodeCombiner self) {
+        public static implicit operator int(PublicHashCodeCombiner self) {
             return self.CombinedHash;
         }
 
@@ -59,8 +59,8 @@
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static HashCodeCombiner Start() {
-            return new HashCodeCombiner(0x1505L);
+        public static PublicHashCodeCombiner Start() {
+            return new PublicHashCodeCombiner(0x1505L);
         }
     }
 }

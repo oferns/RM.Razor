@@ -1,32 +1,25 @@
 ﻿namespace RM.Razor {
+
     using Microsoft.AspNetCore.Builder;
-    using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc.Razor;
     using Microsoft.AspNetCore.Mvc.Razor.Compilation;
-    using Microsoft.AspNetCore.Mvc.Razor.Extensions;
-    using Microsoft.AspNetCore.Mvc.RazorPages.Infrastructure;
-    using Microsoft.AspNetCore.Razor.Language;
-    using Microsoft.CodeAnalysis.Razor;
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.DependencyInjection.Extensions;
-    using Microsoft.Extensions.Hosting;
-    using Microsoft.Extensions.Options;    
-    using System;
-    using System.Collections.Generic;
-    using System.IO;
-    using System.Linq;
+    using Microsoft.Extensions.Options;
 
-    public static class MultiTenantServiceCollectionExtensions {
+    public static class ServiceCollectionExtensions {
 
         // Swaps out the Razor View engine and compiler for ours
-        public static IServiceCollection AddMultiTenantViewEgine(this IServiceCollection services) {
+        // and adds config to the StaticFiles options to use files specific
+        // to the loaded view library, if configured.
+        public static IServiceCollection AddMultiViewEngine(this IServiceCollection services) {
 
             services.TryAddEnumerable(ServiceDescriptor.Transient<IConfigureOptions<RazorMultiViewEngineOptions>, RazorMultiViewEngineOptionsSetup>());
             services.TryAddEnumerable(ServiceDescriptor.Transient<IPostConfigureOptions<StaticFileOptions>, StaticFileOptionsPostConfigure>());
             
             return services
                 .AddSingleton<IRazorViewEngine, RazorMultiViewEngine>()
-                .AddSingleton<IViewCompilerProvider, MultiTenantViewCompilerProvider>();
+                .AddSingleton<IViewCompilerProvider, RazorMultiViewCompilerProvider>();
         }
 
     }

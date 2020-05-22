@@ -9,11 +9,11 @@
     using System.Threading.Tasks;
 
 
-    public class MultiTenantViewCompiler : IViewCompiler {
+    public class RazorMultiViewCompiler : IViewCompiler {
         private readonly Dictionary<string, Task<CompiledViewDescriptor>> _compiledViews;
         private readonly ConcurrentDictionary<string, string> _normalizedPathCache;
 
-        public MultiTenantViewCompiler(
+        public RazorMultiViewCompiler(
             IList<CompiledViewDescriptor> compiledViews) {
             if (compiledViews == null) {
                 throw new ArgumentNullException(nameof(compiledViews));
