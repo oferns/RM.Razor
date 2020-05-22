@@ -14,11 +14,11 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace RM.Razor {
-    public class MultiTenantActionEndpointFactory {
+    public class PublicActionEndpointFactory {
         private readonly RoutePatternTransformer _routePatternTransformer;
         private readonly RequestDelegate _requestDelegate;
 
-        public MultiTenantActionEndpointFactory(RoutePatternTransformer routePatternTransformer) {
+        public PublicActionEndpointFactory(RoutePatternTransformer routePatternTransformer) {
             if (routePatternTransformer == null) {
                 throw new ArgumentNullException(nameof(routePatternTransformer));
             }
@@ -313,7 +313,7 @@ namespace RM.Razor {
                         !builder.Metadata.OfType<HttpMethodMetadata>().Any()) {
                         builder.Metadata.Add(new HttpMethodMetadata(httpMethodActionConstraint.HttpMethods));
                     } else if (actionConstraint is ConsumesAttribute consumesAttribute &&
-                          !builder.Metadata.OfType<IConsumesMetadata>().Any()) {
+                          !builder.Metadata.OfType<IPublicConsumesMetadata>().Any()) {
                         builder.Metadata.Add(new PublicConsumesMetadata(consumesAttribute.ContentTypes.ToArray()));
                     } else if (!builder.Metadata.Contains(actionConstraint)) {
                         // The constraint might have been added earlier, e.g. it is also a filter descriptor

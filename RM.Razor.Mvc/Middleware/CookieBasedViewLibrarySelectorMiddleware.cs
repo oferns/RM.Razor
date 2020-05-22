@@ -8,9 +8,9 @@ namespace RM.Razor.Mvc.Middleware {
 
         public const string CookieKey = "vl";
         private readonly RequestDelegate _next;
-        private readonly MultiTenantRazorViewEngineOptions _options;
+        private readonly RazorMultiViewEngineOptions _options;
 
-        public CookieBasedViewLibrarySelectorMiddleware(RequestDelegate next, IOptions<MultiTenantRazorViewEngineOptions> optionsAccessor) {
+        public CookieBasedViewLibrarySelectorMiddleware(RequestDelegate next, IOptions<RazorMultiViewEngineOptions> optionsAccessor) {
             _next = next;
             _options = optionsAccessor?.Value ?? throw new ArgumentNullException(nameof(optionsAccessor));
         }

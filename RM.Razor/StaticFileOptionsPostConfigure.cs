@@ -8,12 +8,12 @@ namespace RM.Razor {
     using Microsoft.Extensions.Options;
     using System;
 
-    public class MuiltiTenantStaticFileOptionsPostConfigure : IPostConfigureOptions<StaticFileOptions> {
-        private readonly IOptions<MultiTenantRazorViewEngineOptions> optionsAccessor;
+    public class StaticFileOptionsPostConfigure : IPostConfigureOptions<StaticFileOptions> {
+        private readonly IOptions<RazorMultiViewEngineOptions> optionsAccessor;
         private readonly IHttpContextAccessor contextAccessor;
         private readonly IWebHostEnvironment environment;
 
-        public MuiltiTenantStaticFileOptionsPostConfigure(IOptions<MultiTenantRazorViewEngineOptions> optionsAccessor,
+        public StaticFileOptionsPostConfigure(IOptions<RazorMultiViewEngineOptions> optionsAccessor,
                                                             IHttpContextAccessor contextAccessor,
                                                             IWebHostEnvironment environment) {
             this.optionsAccessor = optionsAccessor ?? throw new ArgumentNullException(nameof(optionsAccessor));

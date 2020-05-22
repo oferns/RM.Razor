@@ -4,15 +4,15 @@ namespace RM.Razor {
     using System;
 
     /// <summary>
-    /// An item in <see cref="ViewLocationCacheResult"/>.
+    /// An item in <see cref="PublicViewLocationCacheResult"/>.
     /// </summary>
-    public readonly struct ViewLocationCacheItem {
+    public readonly struct PublicViewLocationCacheItem {
         /// <summary>
-        /// Initializes a new instance of <see cref="ViewLocationCacheItem"/>.
+        /// Initializes a new instance of <see cref="PublicViewLocationCacheItem"/>.
         /// </summary>
         /// <param name="razorPageFactory">The <see cref="IRazorPage"/> factory.</param>
         /// <param name="location">The application relative path of the <see cref="IRazorPage"/>.</param>
-        public ViewLocationCacheItem(Func<IRazorPage> razorPageFactory, string location) {
+        public PublicViewLocationCacheItem(Func<IRazorPage> razorPageFactory, string location) {
             PageFactory = razorPageFactory;
             Location = location;
         }

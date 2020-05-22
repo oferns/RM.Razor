@@ -7,6 +7,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\RM.Mvc.Models\RM.Mvc.Models.csproj" />
+    <ProjectReference Include="..\RM.Razor.RuntimeCompilation\RM.Razor.RuntimeCompilation.csproj" />
     <ProjectReference Include="..\RM.Razor\RM.Razor.csproj" />
     <ProjectReference Include="..\RM.RCL1\RM.RCL1.csproj" />
     <ProjectReference Include="..\RM.RCL2\RM.RCL2.csproj" />

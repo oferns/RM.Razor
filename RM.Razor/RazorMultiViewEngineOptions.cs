@@ -5,7 +5,7 @@ namespace RM.Razor {
     using System;
     using System.Collections.Generic;
 
-    public class MultiTenantRazorViewEngineOptions : RazorViewEngineOptions {
+    public class RazorMultiViewEngineOptions : RazorViewEngineOptions {
 
         // A pair of strings to match the HttpContextItemsKey value to the view library
         // ie  in app.settings you would set it like this (Im basing mine on hostnames)

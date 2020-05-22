@@ -8,9 +8,9 @@
     public class HostBasedViewLibrarySelectorMiddleware {
 
         private readonly RequestDelegate _next;
-        private readonly MultiTenantRazorViewEngineOptions _options;
+        private readonly RazorMultiViewEngineOptions _options;
 
-        public HostBasedViewLibrarySelectorMiddleware(RequestDelegate next, IOptions<MultiTenantRazorViewEngineOptions> optionsAccessor) {
+        public HostBasedViewLibrarySelectorMiddleware(RequestDelegate next, IOptions<RazorMultiViewEngineOptions> optionsAccessor) {
             _next = next;
             _options = optionsAccessor?.Value ?? throw new ArgumentNullException(nameof(optionsAccessor));
         }

@@ -13,13 +13,13 @@
     public class MultiTenantViewCompilerProvider : IViewCompilerProvider {
         
         private readonly IHttpContextAccessor contextAccessor;
-        private readonly MultiTenantRazorViewEngineOptions options;
+        private readonly RazorMultiViewEngineOptions options;
         private readonly IDictionary<string, IViewCompiler> compilers = new Dictionary<string, IViewCompiler>();
         
 
         public MultiTenantViewCompilerProvider(ApplicationPartManager applicationPartManager, 
                                                 IHttpContextAccessor contextAccessor,
-                                                IOptions<MultiTenantRazorViewEngineOptions> optionsAccessor) {
+                                                IOptions<RazorMultiViewEngineOptions> optionsAccessor) {
 
             if (applicationPartManager is null) {
                 throw new ArgumentNullException(nameof(applicationPartManager));

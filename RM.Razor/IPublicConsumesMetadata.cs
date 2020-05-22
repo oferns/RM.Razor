@@ -2,7 +2,7 @@
 
     using System.Collections.Generic;
 
-    public interface IConsumesMetadata {
+    interface IPublicConsumesMetadata {
         IReadOnlyList<string> ContentTypes { get; }
     }
 }

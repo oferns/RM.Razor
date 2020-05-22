@@ -16,13 +16,13 @@ namespace RM.Razor.RuntimeCompilation {
 
         private readonly IHttpContextAccessor contextAccessor;
         private readonly ILogger<RuntimeMultiViewCompiler> logger;
-        private readonly MultiTenantRazorViewEngineOptions options;
+        private readonly RazorMultiViewEngineOptions options;
 
         private readonly IDictionary<string, IViewCompiler> compilers = new Dictionary<string, IViewCompiler>();
 
         public RuntimeMultiViewCompilerProvider(IHttpContextAccessor contextAccessor,
                                                     ApplicationPartManager applicationPartManager,
-                                                    IOptions<MultiTenantRazorViewEngineOptions> optionsAccessor,
+                                                    IOptions<RazorMultiViewEngineOptions> optionsAccessor,
                                                     IDictionary<string, RazorProjectEngine> razorProjectEngines,
                                                     PublicCSharpCompiler csharpCompiler,
                                                     ILoggerFactory loggerFactory) {

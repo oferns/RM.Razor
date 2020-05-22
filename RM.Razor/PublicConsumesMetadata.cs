@@ -3,7 +3,7 @@
     using System;
     using System.Collections.Generic;
 
-    public class PublicConsumesMetadata : IConsumesMetadata {
+    public class PublicConsumesMetadata : IPublicConsumesMetadata {
         
         public PublicConsumesMetadata(string[] contentTypes) {
             if (contentTypes == null) {

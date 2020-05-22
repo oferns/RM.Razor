@@ -7,7 +7,7 @@ namespace RM.Razor {
     using System.Text;
     using Microsoft.Extensions.Primitives;
 
-    internal static class ViewEnginePath {
+    public static class PublicViewEnginePath {
         public static readonly char[] PathSeparators = new[] { '/', '\\' };
         private const string CurrentDirectoryToken = ".";
         private const string ParentDirectoryToken = "..";

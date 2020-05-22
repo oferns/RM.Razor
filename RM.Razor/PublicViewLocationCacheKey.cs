@@ -7,13 +7,13 @@ namespace RM.Razor {
     /// <summary>
     /// Key for entries in <see cref="RazorViewEngine.ViewLookupCache"/>.
     /// </summary>
-    public readonly struct ViewLocationCacheKey : IEquatable<ViewLocationCacheKey> {
+    public readonly struct PublicViewLocationCacheKey : IEquatable<PublicViewLocationCacheKey> {
         /// <summary>
-        /// Initializes a new instance of <see cref="ViewLocationCacheKey"/>.
+        /// Initializes a new instance of <see cref="PublicViewLocationCacheKey"/>.
         /// </summary>
         /// <param name="viewName">The view name or path.</param>
         /// <param name="isMainPage">Determines if the page being found is the main page for an action.</param>
-        public ViewLocationCacheKey(
+        public PublicViewLocationCacheKey(
             string viewName,
             bool isMainPage)
             : this(
@@ -26,7 +26,7 @@ namespace RM.Razor {
         }
 
         /// <summary>
-        /// Initializes a new instance of <see cref="ViewLocationCacheKey"/>.
+        /// Initializes a new instance of <see cref="PublicViewLocationCacheKey"/>.
         /// </summary>
         /// <param name="viewName">The view name.</param>
         /// <param name="controllerName">The controller name.</param>
@@ -34,7 +34,7 @@ namespace RM.Razor {
         /// <param name="pageName">The page name.</param>
         /// <param name="isMainPage">Determines if the page being found is the main page for an action.</param>
         /// <param name="values">Values from <see cref="IViewLocationExpander"/> instances.</param>
-        public ViewLocationCacheKey(
+        public PublicViewLocationCacheKey(
             string viewName,
             string controllerName,
             string areaName,
@@ -80,7 +80,7 @@ namespace RM.Razor {
         public IReadOnlyDictionary<string, string> ViewLocationExpanderValues { get; }
 
         /// <inheritdoc />
-        public bool Equals(ViewLocationCacheKey y) {
+        public bool Equals(PublicViewLocationCacheKey y) {
             if (IsMainPage != y.IsMainPage ||
                 !string.Equals(ViewName, y.ViewName, StringComparison.Ordinal) ||
                 !string.Equals(ControllerName, y.ControllerName, StringComparison.Ordinal) ||
@@ -111,7 +111,7 @@ namespace RM.Razor {
 
         /// <inheritdoc />
         public override bool Equals(object obj) {
-            if (obj is ViewLocationCacheKey key) {
+            if (obj is PublicViewLocationCacheKey key) {
                 return Equals(key);
             }
 

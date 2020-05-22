@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <TargetFramework>net5.0</TargetFramework>
-    <AssemblyName>RM.Razor.Runtime.RuntimeCompilation</AssemblyName>
+    <AssemblyName>RM.Razor.RuntimeCompilation</AssemblyName>
     <AddRazorSupportForMvc>true</AddRazorSupportForMvc>
   
   </PropertyGroup>

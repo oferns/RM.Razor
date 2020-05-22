@@ -19,14 +19,14 @@
 
         private readonly IPageApplicationModelProvider[] _applicationModelProviders;
         private readonly IViewCompilerProvider _viewCompilerProvider;
-        private readonly MultiTenantActionEndpointFactory _endpointFactory;
+        private readonly PublicActionEndpointFactory _endpointFactory;
         private readonly PageConventionCollection _conventions;
         private readonly FilterCollection _globalFilters;
 
         public RuntimeRazorPageLoader(
             IEnumerable<IPageApplicationModelProvider> applicationModelProviders,
             IViewCompilerProvider viewCompilerProvider,
-            MultiTenantActionEndpointFactory endpointFactory,
+            PublicActionEndpointFactory endpointFactory,
             IOptions<RazorPagesOptions> pageOptions,
             IOptions<MvcOptions> mvcOptions) {
             _applicationModelProviders = applicationModelProviders

@@ -8,8 +8,8 @@
     [ViewComponent(Name = "ConfigPicker")]
     public class ConfigPicker : ViewComponent {
 
-        private readonly MultiTenantRazorViewEngineOptions options;
-        public ConfigPicker(IOptions<MultiTenantRazorViewEngineOptions> optionsAccessor) {
+        private readonly RazorMultiViewEngineOptions options;
+        public ConfigPicker(IOptions<RazorMultiViewEngineOptions> optionsAccessor) {
             this.options = optionsAccessor?.Value ?? throw new ArgumentNullException(nameof(optionsAccessor));
         }
 

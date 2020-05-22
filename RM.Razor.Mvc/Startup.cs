@@ -1,15 +1,17 @@
-using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
-using RM.Razor.Mvc.Middleware;
-
 namespace RM.Razor.Mvc {
-    public class Startup {
-        private readonly IHostEnvironment environment;
 
-        public Startup(IConfiguration configuration, IHostEnvironment environment) {
+    using Microsoft.AspNetCore.Builder;
+    using Microsoft.AspNetCore.Hosting;
+    using Microsoft.Extensions.Configuration;
+    using Microsoft.Extensions.DependencyInjection;
+    using Microsoft.Extensions.Hosting;
+    using RM.Razor.Mvc.Middleware;
+    using RM.Razor.RuntimeCompilation;
+
+    public class Startup {
+        private readonly IWebHostEnvironment environment;
+
+        public Startup(IConfiguration configuration, IWebHostEnvironment environment) {
             Configuration = configuration;
             this.environment = environment;
         }
@@ -21,7 +23,7 @@ namespace RM.Razor.Mvc {
 
             services.AddHttpContextAccessor();
 
-            services.Configure<MultiTenantRazorViewEngineOptions>(Configuration.GetSection("MultiTenantRazorViewEngineOptions"));
+            services.Configure<RazorMultiViewEngineOptions>(Configuration.GetSection("MultiTenantRazorViewEngineOptions"));
 
             services.AddMultiTenantViewEgine();
 #if DEBUG
@@ -34,7 +36,7 @@ namespace RM.Razor.Mvc {
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IHostEnvironment env) {
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env) {
 
             app.UseMiddleware<CookieBasedViewLibrarySelectorMiddleware>();
             app.UseMiddleware<HostBasedViewLibrarySelectorMiddleware>();

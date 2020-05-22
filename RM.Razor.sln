@@ -15,7 +15,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RM.RCL2", "RM.RCL2\RM.RCL2.
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RM.Razor.RuntimeCompilation", "RM.Razor.RuntimeCompilation\RM.Razor.RuntimeCompilation.csproj", "{B0196253-70AC-4678-93CD-DA9FD674AB1B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RM.Razor.RuntimeCompilation.Tests", "RM.Razor.RuntimeCompilation.Tests\RM.Razor.RuntimeCompilation.Tests.csproj", "{A4A85A5E-469A-4CA9-AECA-3DF17D346DB5}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RM.Razor.RuntimeCompilation.Tests", "RM.Razor.RuntimeCompilation.Tests\RM.Razor.RuntimeCompilation.Tests.csproj", "{A4A85A5E-469A-4CA9-AECA-3DF17D346DB5}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RM.Razor.Tests", "RM.Razor.Tests\RM.Razor.Tests.csproj", "{0CC16A5D-C499-4ED3-8026-3B527227B8C7}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -51,6 +53,10 @@ Global
 		{A4A85A5E-469A-4CA9-AECA-3DF17D346DB5}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A4A85A5E-469A-4CA9-AECA-3DF17D346DB5}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A4A85A5E-469A-4CA9-AECA-3DF17D346DB5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0CC16A5D-C499-4ED3-8026-3B527227B8C7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0CC16A5D-C499-4ED3-8026-3B527227B8C7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0CC16A5D-C499-4ED3-8026-3B527227B8C7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0CC16A5D-C499-4ED3-8026-3B527227B8C7}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

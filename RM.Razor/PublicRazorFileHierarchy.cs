@@ -3,7 +3,7 @@
     using System.Collections.Generic;
     using System.Text;
 
-    public static class RazorFileHierarchy {
+    public static class PublicRazorFileHierarchy {
         private const string ViewStartFileName = "_ViewStart.cshtml";
 
         public static IEnumerable<string> GetViewStartPaths(string path) {

@@ -10,10 +10,10 @@
         private readonly IHttpContextAccessor contextAccessor;
         private readonly IDictionary<string, ManifestEmbeddedFileProvider> embeddedProviders;
         private readonly IFileProvider originalProvider;
-        private readonly MultiTenantRazorViewEngineOptions viewOptions;
+        private readonly RazorMultiViewEngineOptions viewOptions;
 
         public MultiTenantStaticFileProvider(IHttpContextAccessor contextAccessor, 
-                                            IOptions<MultiTenantRazorViewEngineOptions> viewOptions, 
+                                            IOptions<RazorMultiViewEngineOptions> viewOptions, 
                                             IFileProvider originalProvider) {
             this.contextAccessor = contextAccessor ?? throw new ArgumentNullException(nameof(contextAccessor));            
             this.originalProvider = originalProvider ?? throw new ArgumentNullException(nameof(originalProvider));

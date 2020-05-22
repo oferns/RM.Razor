@@ -6,41 +6,41 @@ namespace RM.Razor {
     /// <summary>
     /// Result of view location cache lookup.
     /// </summary>
-    public class ViewLocationCacheResult {
+    public class PublicViewLocationCacheResult {
         /// <summary>
-        /// Initializes a new instance of <see cref="ViewLocationCacheResult"/>
+        /// Initializes a new instance of <see cref="PublicViewLocationCacheResult"/>
         /// for a view that was successfully found at the specified location.
         /// </summary>
-        /// <param name="view">The <see cref="ViewLocationCacheItem"/> for the found view.</param>
-        /// <param name="viewStarts"><see cref="ViewLocationCacheItem"/>s for applicable _ViewStarts.</param>
-        public ViewLocationCacheResult(
-            ViewLocationCacheItem view,
-            IReadOnlyList<ViewLocationCacheItem> viewStarts) {
+        /// <param name="view">The <see cref="PublicViewLocationCacheItem"/> for the found view.</param>
+        /// <param name="viewStarts"><see cref="PublicViewLocationCacheItem"/>s for applicable _ViewStarts.</param>
+        public PublicViewLocationCacheResult(
+            PublicViewLocationCacheItem view,
+            IReadOnlyList<PublicViewLocationCacheItem> viewStarts) {
             ViewEntry = view;
             ViewStartEntries = viewStarts ?? throw new ArgumentNullException(nameof(viewStarts));
             Success = true;
         }
 
         /// <summary>
-        /// Initializes a new instance of <see cref="ViewLocationCacheResult"/> for a
+        /// Initializes a new instance of <see cref="PublicViewLocationCacheResult"/> for a
         /// failed view lookup.
         /// </summary>
         /// <param name="searchedLocations">Locations that were searched.</param>
-        public ViewLocationCacheResult(IEnumerable<string> searchedLocations) {
+        public PublicViewLocationCacheResult(IEnumerable<string> searchedLocations) {
             SearchedLocations = searchedLocations ?? throw new ArgumentNullException(nameof(searchedLocations));
         }
 
         /// <summary>
-        /// <see cref="ViewLocationCacheItem"/> for the located view.
+        /// <see cref="PublicViewLocationCacheItem"/> for the located view.
         /// </summary>
         /// <remarks><c>null</c> if <see cref="Success"/> is <c>false</c>.</remarks>
-        public ViewLocationCacheItem ViewEntry { get; }
+        public PublicViewLocationCacheItem ViewEntry { get; }
 
         /// <summary>
-        /// <see cref="ViewLocationCacheItem"/>s for applicable _ViewStarts.
+        /// <see cref="PublicViewLocationCacheItem"/>s for applicable _ViewStarts.
         /// </summary>
         /// <remarks><c>null</c> if <see cref="Success"/> is <c>false</c>.</remarks>
-        public IReadOnlyList<ViewLocationCacheItem> ViewStartEntries { get; }
+        public IReadOnlyList<PublicViewLocationCacheItem> ViewStartEntries { get; }
 
         /// <summary>
         /// The sequence of locations that were searched.

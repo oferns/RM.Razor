@@ -44,7 +44,7 @@ namespace RM.Razor.RuntimeCompilation.Tests {
             var compilerProvider = GetCompilerProvider();
 
             var mvcOptions = Options.Create(new MvcOptions());
-            var endpointFactory = new MultiTenantActionEndpointFactory(Mock.Of<RoutePatternTransformer>());
+            var endpointFactory = new PublicActionEndpointFactory(Mock.Of<RoutePatternTransformer>());
 
             var provider1 = new Mock<IPageApplicationModelProvider>();
             var provider2 = new Mock<IPageApplicationModelProvider>();
@@ -120,7 +120,7 @@ namespace RM.Razor.RuntimeCompilation.Tests {
             var compilerProvider = GetCompilerProvider();
 
             var mvcOptions = Options.Create(new MvcOptions());
-            var endpointFactory = new MultiTenantActionEndpointFactory(transformer.Object);
+            var endpointFactory = new PublicActionEndpointFactory(transformer.Object);
 
             var provider = new Mock<IPageApplicationModelProvider>();
 
@@ -158,7 +158,7 @@ namespace RM.Razor.RuntimeCompilation.Tests {
             var descriptor = new PageActionDescriptor();
             var compilerProvider = GetCompilerProvider();
             var mvcOptions = Options.Create(new MvcOptions());
-            var endpointFactory = new MultiTenantActionEndpointFactory(Mock.Of<RoutePatternTransformer>());
+            var endpointFactory = new PublicActionEndpointFactory(Mock.Of<RoutePatternTransformer>());
 
             var provider1 = new Mock<IPageApplicationModelProvider>();
             provider1.SetupGet(p => p.Order).Returns(10);
@@ -230,7 +230,7 @@ namespace RM.Razor.RuntimeCompilation.Tests {
             var compilerProvider = GetCompilerProvider();
 
             var mvcOptions = Options.Create(new MvcOptions());
-            var endpointFactory = new MultiTenantActionEndpointFactory(transformer.Object);
+            var endpointFactory = new PublicActionEndpointFactory(transformer.Object);
 
             var provider = new Mock<IPageApplicationModelProvider>();
 
@@ -280,7 +280,7 @@ namespace RM.Razor.RuntimeCompilation.Tests {
             var compilerProvider = GetCompilerProvider();
 
             var mvcOptions = Options.Create(new MvcOptions());
-            var endpointFactory = new MultiTenantActionEndpointFactory(transformer.Object);
+            var endpointFactory = new PublicActionEndpointFactory(transformer.Object);
 
             var provider = new Mock<IPageApplicationModelProvider>();
 

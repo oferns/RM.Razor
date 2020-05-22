@@ -7,15 +7,14 @@
     using Microsoft.Extensions.Caching.Memory;
     using Microsoft.Extensions.Options;
     using Microsoft.Extensions.Primitives;
-    using System;
-    using System.Collections.Concurrent;
+    using System;    
     using System.Collections.Generic;
     using System.Diagnostics;
     using System.Globalization;
     using System.Linq;
     using System.Text.Encodings.Web;
 
-    public class MultiTenantRazorViewEngine : IRazorViewEngine {
+    public class RazorMultiViewEngine : IRazorViewEngine {
 
         public static readonly string ViewExtension = ".cshtml";
         private const string AreaKey = "area";
@@ -25,15 +24,15 @@
         private readonly IRazorPageFactoryProvider pageFactory;
         private readonly IRazorPageActivator pageActivator;
         private readonly HtmlEncoder htmlEncoder;
-        private readonly MultiTenantRazorViewEngineOptions options;
+        private readonly RazorMultiViewEngineOptions options;
         private readonly DiagnosticListener diagnosticListener;
 
 
-        public MultiTenantRazorViewEngine(IHttpContextAccessor contextAccessor,
+        public RazorMultiViewEngine(IHttpContextAccessor contextAccessor,
                                             IRazorPageFactoryProvider pageFactory,
                                             IRazorPageActivator pageActivator,
                                             HtmlEncoder htmlEncoder,
-                                            IOptions<MultiTenantRazorViewEngineOptions> optionsAccessor,
+                                            IOptions<RazorMultiViewEngineOptions> optionsAccessor,
                                             DiagnosticListener diagnosticListener) {
 
 
@@ -73,7 +72,7 @@
             }
 
             if (string.IsNullOrEmpty(pageName)) {
-                throw new ArgumentException(nameof(pageName));
+                throw new ArgumentException("Value cannot be null or empty.", nameof(pageName));
             }
 
             if (IsApplicationRelativePath(pageName) || IsRelativePath(pageName)) {
@@ -115,7 +114,7 @@
             }
 
             if (string.IsNullOrEmpty(viewName)) {
-                throw new ArgumentException(nameof(viewName));
+                throw new ArgumentException("Value cannot be null or empty.", nameof(viewName));
             }
 
             if (IsApplicationRelativePath(viewName) || IsRelativePath(viewName)) {
@@ -162,13 +161,13 @@
                 // path relative to currently-executing view, if any.
                 // Not yet executing a view. Start in app root.
                 var absolutePath = "/" + pagePath;
-                return ViewEnginePath.ResolvePath(absolutePath);
+                return PublicViewEnginePath.ResolvePath(absolutePath);
             }
 
-            return ViewEnginePath.CombinePath(executingFilePath, pagePath);
+            return PublicViewEnginePath.CombinePath(executingFilePath, pagePath);
         }
 
-        // internal for tests
+        // internal for tests < public coz wtf not?
         internal IEnumerable<string> GetViewLocationFormats(ViewLocationExpanderContext context) {
             if (!string.IsNullOrEmpty(context.AreaName) &&
                 !string.IsNullOrEmpty(context.ControllerName)) {
@@ -187,10 +186,10 @@
             }
         }
 
-        private ViewLocationCacheResult LocatePageFromPath(string executingFilePath, string pagePath, bool isMainPage) {
+        private PublicViewLocationCacheResult LocatePageFromPath(string executingFilePath, string pagePath, bool isMainPage) {
             var applicationRelativePath = GetAbsolutePath(executingFilePath, pagePath);
-            var cacheKey = new ViewLocationCacheKey(applicationRelativePath, isMainPage);
-            if (!ViewLookupCache.TryGetValue(cacheKey, out ViewLocationCacheResult cacheResult)) {
+            var cacheKey = new PublicViewLocationCacheKey(applicationRelativePath, isMainPage);
+            if (!ViewLookupCache.TryGetValue(cacheKey, out PublicViewLocationCacheResult cacheResult)) {
                 var expirationTokens = new HashSet<IChangeToken>();
                 cacheResult = CreateCacheResult(expirationTokens, applicationRelativePath, isMainPage);
 
@@ -202,7 +201,7 @@
 
                 // No views were found at the specified location. Create a not found result.
                 if (cacheResult == null) {
-                    cacheResult = new ViewLocationCacheResult(new[] { applicationRelativePath });
+                    cacheResult = new PublicViewLocationCacheResult(new[] { applicationRelativePath });
                 }
 
                 cacheResult = ViewLookupCache.Set(
@@ -214,7 +213,7 @@
             return cacheResult;
         }
 
-        private ViewLocationCacheResult LocatePageFromViewLocations(ActionContext actionContext, string pageName, bool isMainPage) {
+        private PublicViewLocationCacheResult LocatePageFromViewLocations(ActionContext actionContext, string pageName, bool isMainPage) {
             var controllerName = GetNormalizedRouteValue(actionContext, ControllerKey);
             var areaName = GetNormalizedRouteValue(actionContext, AreaKey);
             string razorPageName = null;
@@ -245,7 +244,7 @@
                 }
             }
 
-            var cacheKey = new ViewLocationCacheKey(
+            var cacheKey = new PublicViewLocationCacheKey(
                 expanderContext.ViewName,
                 expanderContext.ControllerName,
                 expanderContext.AreaName,
@@ -253,14 +252,14 @@
                 expanderContext.IsMainPage,
                 expanderValues);
 
-            if (!ViewLookupCache.TryGetValue(cacheKey, out ViewLocationCacheResult cacheResult)) {
+            if (!ViewLookupCache.TryGetValue(cacheKey, out PublicViewLocationCacheResult cacheResult)) {
                 cacheResult = OnCacheMiss(expanderContext, cacheKey);
             }
 
             return cacheResult;
         }
 
-        private ViewLocationCacheResult OnCacheMiss(ViewLocationExpanderContext expanderContext, ViewLocationCacheKey cacheKey) {
+        private PublicViewLocationCacheResult OnCacheMiss(ViewLocationExpanderContext expanderContext, PublicViewLocationCacheKey cacheKey) {
             var viewLocations = GetViewLocationFormats(expanderContext);
 
             var expanders = options.ViewLocationExpanders;
@@ -270,7 +269,7 @@
                 viewLocations = expanders[i].ExpandViewLocations(expanderContext, viewLocations);
             }
 
-            ViewLocationCacheResult cacheResult = null;
+            PublicViewLocationCacheResult cacheResult = null;
             var searchedLocations = new List<string>();
             var expirationTokens = new HashSet<IChangeToken>();
             foreach (var location in viewLocations) {
@@ -281,7 +280,7 @@
                     expanderContext.ControllerName,
                     expanderContext.AreaName);
 
-                path = ViewEnginePath.ResolvePath(path);
+                path = PublicViewEnginePath.ResolvePath(path);
 
                 cacheResult = CreateCacheResult(expirationTokens, path, expanderContext.IsMainPage);
                 if (cacheResult != null) {
@@ -293,7 +292,7 @@
 
             // No views were found at the specified location. Create a not found result.
             if (cacheResult == null) {
-                cacheResult = new ViewLocationCacheResult(searchedLocations);
+                cacheResult = new PublicViewLocationCacheResult(searchedLocations);
             }
 
             var cacheEntryOptions = new MemoryCacheEntryOptions();
@@ -305,7 +304,7 @@
             return ViewLookupCache.Set(cacheKey, cacheResult, cacheEntryOptions);
         }
 
-        internal ViewLocationCacheResult CreateCacheResult(HashSet<IChangeToken> expirationTokens, string relativePath, bool isMainPage) {
+        internal PublicViewLocationCacheResult CreateCacheResult(HashSet<IChangeToken> expirationTokens, string relativePath, bool isMainPage) {
             var factoryResult = pageFactory.CreateFactory(relativePath);
             var viewDescriptor = factoryResult.ViewDescriptor;
             if (viewDescriptor?.ExpirationTokens != null) {
@@ -321,22 +320,22 @@
                 // Only need to lookup _ViewStarts for the main page.
                 var viewStartPages = isMainPage ?
                     GetViewStartPages(viewDescriptor.RelativePath, expirationTokens) :
-                    Array.Empty<ViewLocationCacheItem>();
+                    Array.Empty<PublicViewLocationCacheItem>();
 
 
-                return new ViewLocationCacheResult(
-                    new ViewLocationCacheItem(factoryResult.RazorPageFactory, relativePath),
+                return new PublicViewLocationCacheResult(
+                    new PublicViewLocationCacheItem(factoryResult.RazorPageFactory, relativePath),
                     viewStartPages);
             }
 
             return null;
         }
 
-        private IReadOnlyList<ViewLocationCacheItem> GetViewStartPages(string path, HashSet<IChangeToken> expirationTokens) {
+        private IReadOnlyList<PublicViewLocationCacheItem> GetViewStartPages(string path, HashSet<IChangeToken> expirationTokens) {
 
-            var viewStartPages = new List<ViewLocationCacheItem>();
+            var viewStartPages = new List<PublicViewLocationCacheItem>();
 
-            foreach (var filePath in RazorFileHierarchy.GetViewStartPaths(path)) {
+            foreach (var filePath in PublicRazorFileHierarchy.GetViewStartPaths(path)) {
                 var result = pageFactory.CreateFactory(filePath);
                 var viewDescriptor = result.ViewDescriptor;
                 if (viewDescriptor?.ExpirationTokens != null) {
@@ -349,14 +348,14 @@
                     // Populate the viewStartPages list so that _ViewStarts appear in the order the need to be
                     // executed (closest last, furthest first). This is the reverse order in which
                     // ViewHierarchyUtility.GetViewStartLocations returns _ViewStarts.
-                    viewStartPages.Insert(0, new ViewLocationCacheItem(result.RazorPageFactory, filePath));
+                    viewStartPages.Insert(0, new PublicViewLocationCacheItem(result.RazorPageFactory, filePath));
                 }
             }
 
             return viewStartPages;
         }
 
-        internal virtual ViewEngineResult CreateViewEngineResult(ViewLocationCacheResult result, string viewName) {
+        internal virtual ViewEngineResult CreateViewEngineResult(PublicViewLocationCacheResult result, string viewName) {
             if (!result.Success) {
                 return ViewEngineResult.NotFound(viewName, result.SearchedLocations);
             }
@@ -396,8 +395,8 @@
         private class MultiTenantMemoryCache : IMemoryCache {
             private readonly IHttpContextAccessor contextAccessor;
             private readonly string httpContextItemsKey;
-            private static readonly IDictionary<string, IMemoryCache> hostCaches = new Dictionary<string, IMemoryCache> { { "default", new MemoryCache(new MemoryCacheOptions()) } };
-            private static readonly object hostCachesLock = new object();
+            private readonly IDictionary<string, IMemoryCache> hostCaches = new Dictionary<string, IMemoryCache> { { "default", new MemoryCache(new MemoryCacheOptions()) } };
+            private readonly object hostCachesLock = new object();
 
             internal MultiTenantMemoryCache(IHttpContextAccessor contextAccessor, string httpContextItemsKey) {
                 this.contextAccessor = contextAccessor ?? throw new ArgumentNullException(nameof(contextAccessor));
@@ -418,7 +417,7 @@
 
             private IMemoryCache GetCurrentTenantCache() {
 
-                if (contextAccessor.HttpContext.Items.TryGetValue(this.httpContextItemsKey, out var host) && !string.IsNullOrEmpty(host?.ToString())) {
+                if (contextAccessor.HttpContext is object && contextAccessor.HttpContext.Items.TryGetValue(this.httpContextItemsKey, out var host) && !string.IsNullOrEmpty(host?.ToString())) {
 
                     var hostName = host.ToString();
                     if (hostCaches.ContainsKey(hostName)) {
@@ -448,7 +447,6 @@
                     }
                 }
             }
-
         }
     }
 }
