@@ -8,6 +8,7 @@ namespace RM.Razor.RuntimeCompilation {
     using Microsoft.Extensions.Logging;
     using Microsoft.Extensions.Options;
     using System;
+    using System.Collections.Concurrent;
     using System.Collections.Generic;
     using System.Linq;
     using System.Reflection;
@@ -36,13 +37,17 @@ namespace RM.Razor.RuntimeCompilation {
 
             var defaultViews = new List<CompiledViewDescriptor>();
 
-            foreach (var descriptor in feature.ViewDescriptors.Where(f => f.Item.Type.Assembly.GetName().Name.Equals($"{options.DefaultViewLibrary.AssemblyName}.Views", StringComparison.Ordinal))) {
+            var defaultEngine = razorProjectEngines.First();
+
+            foreach (var descriptor in feature.ViewDescriptors.Where(f => f.Item.Type.Assembly.GetName().Name.Equals(options.DefaultViewLibrary?.AssemblyName) ||
+                                                                           f.Item.Type.Assembly.GetName().Name.Equals(options.DefaultViewLibrary?.AssemblyName + ".Views", StringComparison.Ordinal))) {
+
                 if (!defaultViews.Exists(v => v.RelativePath.Equals(descriptor.RelativePath, StringComparison.OrdinalIgnoreCase))) {
                     defaultViews.Add(descriptor);
                 }
             }
-
-            compilers.Add("default", new RazorMultiViewCompiler(defaultViews));
+            
+            compilers.Add("default", new RuntimeMultiViewCompiler(new Dictionary<string, RazorProjectEngine> { { defaultEngine.Key, defaultEngine.Value } }, csharpCompiler, defaultViews, logger));
 
             // A cache list of libraries and their compiled views 
             var libraryViewList = new Dictionary<string, List<CompiledViewDescriptor>>();
@@ -50,7 +55,7 @@ namespace RM.Razor.RuntimeCompilation {
             foreach (var option in options.ViewLibraryConfig) {
 
                 var optionEngines = new Dictionary<string, RazorProjectEngine>();
-
+         
                 if (compilers.ContainsKey(option.Key)) {
                     continue;
                 }
@@ -62,12 +67,12 @@ namespace RM.Razor.RuntimeCompilation {
                 foreach (var library in option.Value) {
                     if (razorProjectEngines.TryGetValue(library + ".Views", out var engine)) {
                         if (!optionEngines.ContainsKey(library)) {
-                            optionEngines.Add(library, engine);
+                            optionEngines.Add(library + ".Views", engine);
                         }
                     }
 
                     if (!libraryViewList.TryGetValue(library, out var liblist)) {
-                        liblist = feature.ViewDescriptors.Where(d => d.Item.Type.Assembly.GetName().Name.Equals($"{library}.Views")).ToList();
+                        liblist = feature.ViewDescriptors.Where(d => d.Item.Type.Assembly.GetName().Name.Equals($"{library}") || d.Item.Type.Assembly.GetName().Name.Equals($"{library}.Views")).ToList();
                     }
 
                     foreach (var descriptor in liblist) {
@@ -85,6 +90,8 @@ namespace RM.Razor.RuntimeCompilation {
                     }
                     viewDescriptors.Add(descriptor);
                 }
+
+                optionEngines.Add(defaultEngine.Key, defaultEngine.Value);
 
                 compilers.Add(option.Key, new RuntimeMultiViewCompiler(optionEngines, csharpCompiler, viewDescriptors, logger));
             }

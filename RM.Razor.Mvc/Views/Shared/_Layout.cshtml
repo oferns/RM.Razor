@@ -14,6 +14,7 @@
             <strong><i>@this.Path</i> (@this.GetType().Assembly.GetName().Name)</strong>
         </p>
 
+        <h3>Hello</h3>
         <main role="main" class="pb-3">
             @RenderBody()
         </main>
@@ -21,12 +22,9 @@
             <strong><i>@this.Path</i> (@this.GetType().Assembly.GetName().Name)</strong>
         </p>
 
-    </div>
-    <vc:config-picker></vc:config-picker>
+    </div>    
     <footer class="border-top footer text-muted">
-        <div class="container">
-            &copy; 2020 - RM.Web - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
-        </div>
+        <vc:config-picker></vc:config-picker>
     </footer>
     <script src="~/app.js" asp-append-version="true"></script>
     @await RenderSectionAsync("Scripts", required: false)

@@ -23,7 +23,7 @@ namespace RM.Razor.RuntimeCompilation.Tests {
         }
 
         public static RazorCompiledItem CreateForView(Type type, string identifier, object[] metadata = null) {
-            return new TestRazorCompiledItem(type, "mvc.1.0.razor-page", identifier, metadata);
+            return new TestRazorCompiledItem(type, "mvc.1.0.view", identifier, metadata);
         }
 
         public TestRazorCompiledItem(Type type, string kind, string identifier, object[] metadata) {

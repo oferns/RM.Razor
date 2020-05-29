@@ -56,7 +56,7 @@ namespace RM.Razor.RuntimeCompilation {
             }
 
             var sourceDocument = RazorSourceDocument.ReadFrom(projectItem);
-            if (!string.Equals(sourceDocument.GetChecksumAlgorithm(), primaryChecksum.ChecksumAlgorithm) ||
+            if (!string.Equals(sourceDocument.GetChecksumAlgorithm(), primaryChecksum.ChecksumAlgorithm, StringComparison.OrdinalIgnoreCase) ||
                 !ChecksumsEqual(primaryChecksum.Checksum, sourceDocument.GetChecksum())) {
                 // Main file exists, but checksums not equal.
                 return false;

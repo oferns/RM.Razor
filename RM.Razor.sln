@@ -17,7 +17,12 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RM.Razor.RuntimeCompilation
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RM.Razor.RuntimeCompilation.Tests", "RM.Razor.RuntimeCompilation.Tests\RM.Razor.RuntimeCompilation.Tests.csproj", "{A4A85A5E-469A-4CA9-AECA-3DF17D346DB5}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RM.Razor.Tests", "RM.Razor.Tests\RM.Razor.Tests.csproj", "{0CC16A5D-C499-4ED3-8026-3B527227B8C7}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RM.Razor.Tests", "RM.Razor.Tests\RM.Razor.Tests.csproj", "{0CC16A5D-C499-4ED3-8026-3B527227B8C7}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{E27472A3-7D9A-4D65-A8AE-98FEEB1EF6D3}"
+	ProjectSection(SolutionItems) = preProject
+		.editorconfig = .editorconfig
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

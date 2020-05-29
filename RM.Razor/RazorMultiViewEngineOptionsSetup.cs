@@ -1,20 +1,24 @@
 ﻿namespace RM.Razor {
     using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc.ApplicationParts;
+    using Microsoft.AspNetCore.Mvc.Razor;
     using Microsoft.AspNetCore.Mvc.RazorPages;
     using Microsoft.AspNetCore.Mvc.RazorPages.Infrastructure;
     using Microsoft.Extensions.Hosting;
     using Microsoft.Extensions.Options;
     using System;
     using System.Collections.Generic;
+    using System.Diagnostics.Contracts;
     using System.IO;
     using System.Reflection;
 
     public class RazorMultiViewEngineOptionsSetup : IConfigureOptions<RazorMultiViewEngineOptions> {
         private readonly IHostEnvironment environment;
+        private readonly RazorViewEngineOptions originalOptions;
 
-        public RazorMultiViewEngineOptionsSetup(IHostEnvironment environment) {
+        public RazorMultiViewEngineOptionsSetup(IHostEnvironment environment, IOptions<RazorViewEngineOptions> originalOptions) {
             this.environment = environment ?? throw new ArgumentNullException(nameof(environment));
+            this.originalOptions = originalOptions?.Value ?? throw new ArgumentNullException(nameof(originalOptions));
         }
 
 
@@ -58,6 +62,25 @@
             options.AreaViewLocationFormats.Add("/Areas/{2}/Views/Shared/{0}" + RazorMultiViewEngine.ViewExtension);
             options.AreaViewLocationFormats.Add("/Views/Shared/{0}" + RazorMultiViewEngine.ViewExtension);
 
+
+            foreach (var loc in originalOptions.PageViewLocationFormats) {
+                if (!options.PageViewLocationFormats.Contains(loc)) {
+                    options.PageViewLocationFormats.Add(loc);
+                }
+            }
+
+            foreach (var loc in originalOptions.AreaPageViewLocationFormats) {
+                if (!options.AreaPageViewLocationFormats.Contains(loc)) {
+                    options.AreaPageViewLocationFormats.Add(loc);
+                }
+            }
+
+
+            foreach (var locex in originalOptions.ViewLocationExpanders) {
+                if (!options.ViewLocationExpanders.Contains(locex)) {
+                    options.ViewLocationExpanders.Add(locex);
+                }
+            }
 
             //var rootDirectory = environment.ContentRootPath;
 

@@ -26,12 +26,13 @@ namespace RM.Razor.Mvc {
             services.Configure<RazorMultiViewEngineOptions>(Configuration.GetSection("MultiTenantRazorViewEngineOptions"));
 
             services.AddMultiViewEngine();
-#if DEBUG
-            // services.AddMultiTenantRuntimeCompilation(environment);
-#endif
+
+            services.AddMultiTenantRuntimeCompilation(environment);
+
             services.AddControllersWithViews();
-            
+
             services.AddRazorPages();
+
 
         }
 
@@ -47,11 +48,11 @@ namespace RM.Razor.Mvc {
                 app.UseExceptionHandler("/Home/Error");
             }
 
-            app.UseStaticFiles();  
-                          
+            app.UseStaticFiles();
+
             app.UseRouting();
 
-            app.UseAuthorization();                                                   
+            app.UseAuthorization();
 
 
             app.UseEndpoints(endpoints => {

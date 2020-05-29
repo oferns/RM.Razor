@@ -21,7 +21,7 @@
         /// If this is set then an embedded file provider is added to the pipeline 
         /// to serve static files from this ViewLibrary       
         /// </summary>
-        public string EmbeddedStaticFilePath { get; set; }
+        public string StaticFilePath { get; set; }
 
     }
 }

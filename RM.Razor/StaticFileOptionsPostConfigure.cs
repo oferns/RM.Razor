@@ -24,7 +24,7 @@ namespace RM.Razor {
 
 
         public void PostConfigure(string name, StaticFileOptions options) {
-            options.FileProvider = new KeyedStaticFileProvider(contextAccessor, this.optionsAccessor, environment.WebRootFileProvider);
+            options.FileProvider = new KeyedStaticFileProvider(contextAccessor, this.optionsAccessor, environment);
         }
     }
 }

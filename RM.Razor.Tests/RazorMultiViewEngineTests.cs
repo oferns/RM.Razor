@@ -1933,7 +1933,7 @@
             IEnumerable<string> viewLocationFormats = null,
             IEnumerable<string> areaViewLocationFormats = null,
             IEnumerable<string> pageViewLocationFormats = null) {
-            var optionsSetup = new RazorMultiViewEngineOptionsSetup(GetTestEnvironment());
+            var optionsSetup = new RazorMultiViewEngineOptionsSetup(GetTestEnvironment(), Options.Create(new RazorViewEngineOptions()));
 
             var options = new RazorMultiViewEngineOptions();
             optionsSetup.Configure(options);

@@ -13,19 +13,13 @@ namespace RM.Razor.RuntimeCompilation {
     public class PublicFileProviderRazorProjectFileSystem : RazorProjectFileSystem {
         private const string RazorFileExtension = ".cshtml";
         private readonly PublicRuntimeCompilationFileProvider _fileProvider;
-        private readonly IWebHostEnvironment _hostingEnvironment;
 
-        public PublicFileProviderRazorProjectFileSystem(PublicRuntimeCompilationFileProvider fileProvider, IWebHostEnvironment hostingEnvironment) {
+        public PublicFileProviderRazorProjectFileSystem(PublicRuntimeCompilationFileProvider fileProvider) {
             if (fileProvider == null) {
                 throw new ArgumentNullException(nameof(fileProvider));
             }
 
-            if (hostingEnvironment == null) {
-                throw new ArgumentNullException(nameof(hostingEnvironment));
-            }
-
             _fileProvider = fileProvider;
-            _hostingEnvironment = hostingEnvironment;
         }
 
         public IFileProvider FileProvider => _fileProvider.FileProvider;
@@ -39,7 +33,7 @@ namespace RM.Razor.RuntimeCompilation {
             path = NormalizeAndEnsureValidPath(path);
             var fileInfo = FileProvider.GetFileInfo(path);
 
-            return new FileProviderRazorProjectItem(fileInfo, basePath: string.Empty, filePath: path, root: _hostingEnvironment.ContentRootPath, fileKind);
+            return new FileProviderRazorProjectItem(fileInfo, basePath: string.Empty, filePath: path, root: null, fileKind);
         }
 
         public override IEnumerable<RazorProjectItem> EnumerateItems(string path) {
@@ -60,7 +54,7 @@ namespace RM.Razor.RuntimeCompilation {
                     } else if (string.Equals(RazorFileExtension, Path.GetExtension(fileInfo.Name), StringComparison.OrdinalIgnoreCase)) {
                         var filePath = prefix + "/" + fileInfo.Name;
 
-                        yield return new FileProviderRazorProjectItem(fileInfo, basePath, filePath: filePath, root: _hostingEnvironment.ContentRootPath);
+                        yield return new FileProviderRazorProjectItem(fileInfo, basePath, filePath: filePath, root: null);
                     }
                 }
             }

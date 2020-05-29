@@ -5,12 +5,13 @@
 </p>
 
 <form asp-action="ChangeConfig" asp-controller="Home" method="get">
-    <select name="configName">
-        <option title="default" value="default" selected="@(ViewContext.HttpContext.Request.Cookies["vl"] is null)">default</option>
-        @foreach (var config in Model.ViewLibraryConfig) {
-            <option title="@config.Key" value="@config.Key" selected="@config.Key.Equals(ViewContext.HttpContext.Request.Cookies["vl"]?.ToString())">@config.Key</option>
+    <input id="default" type="radio" name="configName" title="default" value="default" checked="@(ViewContext.HttpContext.Request.Cookies["vl"] is null ? "checked" : null)" />
+    <label for="default">default</label>
+    @foreach (var config in Model.ViewLibraryConfig)
+    {
+        <input id="@config.Key" type="radio" name="configName" title="@config.Key" value="@config.Key" checked="@(config.Key.Equals(ViewContext.HttpContext.Request.Cookies["vl"]?.ToString())? "checked" : null)" />
+        <label for="@config.Key">@config.Key</label>
 
-        }
-    </select>
+    }
     <button type="submit" asp-action="ChangeConfig" asp-controller="Home">Submit</button>
 </form>

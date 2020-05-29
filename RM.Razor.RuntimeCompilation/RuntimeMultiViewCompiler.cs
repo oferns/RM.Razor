@@ -24,6 +24,8 @@
 
         private readonly Dictionary<string, CompiledViewDescriptor> precompiledViews = new Dictionary<string, CompiledViewDescriptor>(StringComparer.OrdinalIgnoreCase);
 
+        private readonly ConcurrentDictionary<string, IEnumerable<CompiledViewDescriptor>> compiledViews = new ConcurrentDictionary<string, IEnumerable<CompiledViewDescriptor>>();
+
         private readonly IMemoryCache cache = new MemoryCache(new MemoryCacheOptions());
         private readonly object cacheLock = new object();
 
@@ -43,7 +45,10 @@
             this.csharpCompiler = csharpCompiler;
             this.logger = logger;
 
+            var libs = new List<string>();
             foreach (var compiledView in compiledViews) {
+
+                var library = compiledView.Type?.Assembly.GetName().Name ?? "default";
 
                 if (!this.precompiledViews.ContainsKey(compiledView.RelativePath)) {
                     this.precompiledViews.Add(compiledView.RelativePath, compiledView);
@@ -103,10 +108,11 @@
                 }
 
                 if (precompiledViews.TryGetValue(normalizedPath, out var precompiledView)) {
-                    item = CreatePrecompiledWorkItem(normalizedPath, precompiledView);
-                   // precompiledViews.Remove(normalizedPath);
+                    // item = CreatePrecompiledWorkItem(normalizedPath, precompiledView);
+                    // precompiledViews.Remove(normalizedPath); // Once it is in a work item remove it.
+                    item = CreateRuntimeCompilationWorkItem(normalizedPath, precompiledView);
                 } else {
-                    item = CreateRuntimeCompilationWorkItem(normalizedPath);
+                    item = CreateRuntimeCompilationWorkItem(normalizedPath, null);
                 }
 
                 var tokens = new List<IChangeToken>();
@@ -130,19 +136,13 @@
             if (item.SupportsCompilation) {
                 Debug.Assert(taskSource is object);
 
-                if (item.Descriptor?.Item is object ) {
+                if (item.Descriptor?.Item is object) {
 
                     var itemAssemblyName = item.Descriptor.Item.Type.Assembly.GetName().Name;
                     // If we dont have an engine for the library
                     if (!projectEngines.TryGetValue(itemAssemblyName, out var engine)) {
                         engine = projectEngines.First().Value;
-                        if (PublicChecksumValidator.IsItemValid(engine.FileSystem, item.Descriptor.Item)) {
-                            taskSource.SetResult(item.Descriptor);
-                            return taskSource.Task;
-                        }
                     }
-
-                    // If the item has checksums to validate, we should also have a precompiled view.
 
                     // If nothing changed serve that mofo
                     if (PublicChecksumValidator.IsItemValid(engine.FileSystem, item.Descriptor.Item)) {
@@ -173,6 +173,13 @@
                 foreach (var engine in projectEngines) {
                     var file = engine.Value.FileSystem.GetItem(normalizedPath, null);
                     if (file.Exists) {
+                        if (item.OriginalDescriptor is object) {
+                            if (PublicChecksumValidator.IsItemValid(engine.Value.FileSystem, item.OriginalDescriptor.Item)) {
+                                taskSource.SetResult(item.OriginalDescriptor);
+                                return taskSource.Task;
+                            }
+                        }
+
                         try {
                             var descriptor = CompileAndEmit(normalizedPath, engine.Value, engine.Key);
                             descriptor.ExpirationTokens = cacheEntryOptions.ExpirationTokens;
@@ -209,6 +216,7 @@
                 };
             }
 
+
             var item = new ViewCompilerWorkItem {
                 SupportsCompilation = true,
                 Descriptor = precompiledView, // This might be used, if the checksums match.
@@ -229,9 +237,30 @@
             return item;
         }
 
-        private ViewCompilerWorkItem CreateRuntimeCompilationWorkItem(string normalizedPath) {
+        private ViewCompilerWorkItem CreateRuntimeCompilationWorkItem(string normalizedPath, CompiledViewDescriptor originalDescriptor) {
+
+            if (originalDescriptor is object) {
+                if (originalDescriptor.Item == null || !PublicChecksumValidator.IsRecompilationSupported(originalDescriptor.Item)) {
+                    return new ViewCompilerWorkItem {
+                        // If we don't have a checksum for the primary source file we can't recompile.
+                        SupportsCompilation = false,
+                        ExpirationTokens = Array.Empty<IChangeToken>(), // Never expire because we can't recompile.
+                        Descriptor = originalDescriptor, // This will be used as-is.
+                    };
+                }
+
+                var assembly = originalDescriptor.Item.Type?.Assembly.GetName().Name;
+                if (!string.IsNullOrEmpty(assembly) && this.projectEngines.TryGetValue(assembly, out var origEngine)) {
+                    var projectItem = origEngine.FileSystem.GetItem(normalizedPath, fileKind: null);
+                    if (!projectItem.Exists) {
+                        originalDescriptor = null; //force recompilation
+                    }
+                }
+            }
+
             var allTokens = new List<IChangeToken>();
             var exists = false;
+
             foreach (var engine in this.projectEngines) {
                 var fileProvider = GetProviderFromRazorProjectEngine(engine.Value);
                 IList<IChangeToken> expirationTokens = new List<IChangeToken> {
@@ -241,12 +270,22 @@
                 var projectItem = engine.Value.FileSystem.GetItem(normalizedPath, fileKind: null);
                 if (projectItem.Exists) {
                     exists = true;
-                    // _logger.ViewCompilerCouldNotFindFileAtPath(normalizedPath);
-                    GetChangeTokensFromImports(expirationTokens, projectItem);
+                    var importFeature = engine.Value.ProjectFeatures.OfType<IImportProjectFeature>().ToArray();
+                    foreach (var feature in importFeature) {
+                        foreach (var file in feature.GetImports(projectItem)) {
+                            if (file.FilePath != null) {
+                                expirationTokens.Add(GetProviderFromRazorProjectEngine(engine.Value).Watch(file.FilePath));
+                            }
+                        }
+                    }
                 }
 
                 allTokens.AddRange(expirationTokens);
                 // _logger.ViewCompilerFoundFileToCompile(normalizedPath);
+            }
+
+            if (originalDescriptor is object) {
+                originalDescriptor.ExpirationTokens = allTokens;
             }
 
             return new ViewCompilerWorkItem() {
@@ -256,7 +295,9 @@
                 Descriptor = exists ? default : new CompiledViewDescriptor() {
                     RelativePath = normalizedPath,
                     ExpirationTokens = allTokens
-                }
+
+                },
+                OriginalDescriptor = originalDescriptor
             };
         }
 
@@ -275,20 +316,6 @@
                 }
             }
             return expirationTokens;
-        }
-
-        private void GetChangeTokensFromImports(IList<IChangeToken> expirationTokens, RazorProjectItem projectItem) {
-
-            foreach (var engine in this.projectEngines) {
-                var importFeature = engine.Value.ProjectFeatures.OfType<IImportProjectFeature>().ToArray();
-                foreach (var feature in importFeature) {
-                    foreach (var file in feature.GetImports(projectItem)) {
-                        if (file.FilePath != null) {
-                            expirationTokens.Add(GetProviderFromRazorProjectEngine(engine.Value).Watch(file.FilePath));
-                        }
-                    }
-                }
-            }
         }
 
         protected virtual CompiledViewDescriptor CompileAndEmit(string relativePath, RazorProjectEngine engine, string assemblyName) {
@@ -405,6 +432,9 @@
             public IList<IChangeToken> ExpirationTokens { get; set; }
 
             public CompiledViewDescriptor Descriptor { get; set; }
+
+            public CompiledViewDescriptor OriginalDescriptor { get; set; }
+
         }
     }
 }

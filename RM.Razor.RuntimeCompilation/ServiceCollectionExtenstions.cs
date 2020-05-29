@@ -9,6 +9,8 @@
     using Microsoft.AspNetCore.Razor.Language;
     using Microsoft.CodeAnalysis.Razor;
     using Microsoft.Extensions.DependencyInjection;
+    using Microsoft.Extensions.DependencyInjection.Extensions;
+    using Microsoft.Extensions.FileProviders;
     using Microsoft.Extensions.Options;
     using System;
     using System.Collections.Generic;
@@ -18,6 +20,8 @@
 
         // Adds Runtime Compilation support
         public static IServiceCollection AddMultiTenantRuntimeCompilation(this IServiceCollection services, IWebHostEnvironment environment) {
+
+            services.TryAddEnumerable(ServiceDescriptor.Transient<IConfigureOptions<MvcRazorRuntimeCompilationOptions>, PublicMvcRazorRuntimeCompilationOptionsSetup>());
 
             services.AddSingleton<PublicActionEndpointFactory>();
             services.AddSingleton<PageLoader, RuntimeRazorPageLoader>();
@@ -44,8 +48,12 @@
 
                 if (!string.IsNullOrEmpty(options.DefaultViewLibrary.PathRelativeToContentRoot)) {
                     var path = Path.GetFullPath(Path.Combine(environment.ContentRootPath, options.DefaultViewLibrary.PathRelativeToContentRoot));
-                    var engine = GetEngine(csharpCompiler, referenceManager, new PublicFileProviderRazorProjectFileSystem(
-                        new PublicRuntimeCompilationFileProvider(compileOptions), environment), options.DefaultViewLibrary.AssemblyName);
+                    var liboptions = new MvcRazorRuntimeCompilationOptions();
+                    liboptions.FileProviders.Add(new PhysicalFileProvider(path));
+                    var engine = GetEngine(csharpCompiler, referenceManager,
+                        new PublicFileProviderRazorProjectFileSystem(
+                            new PublicRuntimeCompilationFileProvider(Options.Create(liboptions))),
+                            options.DefaultViewLibrary.AssemblyName);
                     dictionary.Add($"{options.DefaultViewLibrary.AssemblyName}.Views", engine);
                 }
 
@@ -59,8 +67,13 @@
 
                     if (!string.IsNullOrEmpty(viewLibrary.PathRelativeToContentRoot)) {
                         var path = Path.GetFullPath(Path.Combine(environment.ContentRootPath, viewLibrary.PathRelativeToContentRoot));
-                        var engine = GetEngine(csharpCompiler, referenceManager, new PublicFileProviderRazorProjectFileSystem(
-                        new PublicRuntimeCompilationFileProvider(compileOptions), environment), viewLibrary.AssemblyName);
+                        var liboptions = new MvcRazorRuntimeCompilationOptions();
+                        liboptions.FileProviders.Add(new PhysicalFileProvider(path));
+                        var engine = GetEngine(csharpCompiler, referenceManager,
+                            new PublicFileProviderRazorProjectFileSystem(
+                                new PublicRuntimeCompilationFileProvider(Options.Create(liboptions))), viewLibrary.AssemblyName);
+
+
                         dictionary.Add($"{viewLibrary.AssemblyName}.Views", engine);
                     }
                 }
