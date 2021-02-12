@@ -3,25 +3,26 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.30021.99
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RM.Razor", "RM.Razor\RM.Razor.csproj", "{9DAD8F70-260C-4AD9-913C-A102E3F111EE}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RM.Razor", "src\RM.Razor\RM.Razor.csproj", "{9DAD8F70-260C-4AD9-913C-A102E3F111EE}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RM.Razor.Mvc", "RM.Razor.Mvc\RM.Razor.Mvc.csproj", "{5395473C-5FFA-4964-AA61-89B40ACE95B8}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RM.Razor.Mvc", "src\RM.Razor.Mvc\RM.Razor.Mvc.csproj", "{5395473C-5FFA-4964-AA61-89B40ACE95B8}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RM.RCL1", "RM.RCL1\RM.RCL1.csproj", "{7A07C672-2BD9-437E-B914-BBEC93F527A9}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RM.RCL1", "src\RM.RCL1\RM.RCL1.csproj", "{7A07C672-2BD9-437E-B914-BBEC93F527A9}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RM.Mvc.Models", "RM.Mvc.Models\RM.Mvc.Models.csproj", "{F6F8C3ED-C079-4256-A2BC-C4F034D2DC85}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RM.Mvc.Models", "src\RM.Mvc.Models\RM.Mvc.Models.csproj", "{F6F8C3ED-C079-4256-A2BC-C4F034D2DC85}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RM.RCL2", "RM.RCL2\RM.RCL2.csproj", "{CB7EBF91-686E-4FA1-B090-7276ACB661E1}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RM.RCL2", "src\RM.RCL2\RM.RCL2.csproj", "{CB7EBF91-686E-4FA1-B090-7276ACB661E1}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RM.Razor.RuntimeCompilation", "RM.Razor.RuntimeCompilation\RM.Razor.RuntimeCompilation.csproj", "{B0196253-70AC-4678-93CD-DA9FD674AB1B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RM.Razor.RuntimeCompilation", "src\RM.Razor.RuntimeCompilation\RM.Razor.RuntimeCompilation.csproj", "{B0196253-70AC-4678-93CD-DA9FD674AB1B}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RM.Razor.RuntimeCompilation.Tests", "RM.Razor.RuntimeCompilation.Tests\RM.Razor.RuntimeCompilation.Tests.csproj", "{A4A85A5E-469A-4CA9-AECA-3DF17D346DB5}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RM.Razor.RuntimeCompilation.Tests", "src\RM.Razor.RuntimeCompilation.Tests\RM.Razor.RuntimeCompilation.Tests.csproj", "{A4A85A5E-469A-4CA9-AECA-3DF17D346DB5}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RM.Razor.Tests", "RM.Razor.Tests\RM.Razor.Tests.csproj", "{0CC16A5D-C499-4ED3-8026-3B527227B8C7}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RM.Razor.Tests", "src\RM.Razor.Tests\RM.Razor.Tests.csproj", "{0CC16A5D-C499-4ED3-8026-3B527227B8C7}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{E27472A3-7D9A-4D65-A8AE-98FEEB1EF6D3}"
 	ProjectSection(SolutionItems) = preProject
 		.editorconfig = .editorconfig
+		build.yml = build.yml
 	EndProjectSection
 EndProject
 Global

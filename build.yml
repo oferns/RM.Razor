@@ -1,0 +1,34 @@
+variables:
+- name: buildConfiguration
+  value: Release
+- name: solution.prefix
+  value: $[variables['Build.Repository.Name']]
+- name: solution.run.tests
+  value: false
+- group: buildVariables
+
+resources:
+  repositories:
+  - repository: build
+    type: git
+    name: build
+    source: optimis_platform/build
+
+pool:
+  vmImage: 'windows-latest'
+
+#Assign variables for use in other jobs 
+jobs:
+- job: SetupTasks
+  steps:
+  - checkout: self
+    persistCredentials: 'true'
+   
+  - template: optimis.setup.yml@build
+
+  - template: optimis.build.yml@build
+
+  - template: optimis.test.yml@build
+
+  - template: optimis.release.yml@build
+
