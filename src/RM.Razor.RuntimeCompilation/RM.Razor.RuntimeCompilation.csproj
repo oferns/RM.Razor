@@ -2,9 +2,27 @@
 
   <PropertyGroup>
     <TargetFrameworks>net5.0;net6.0</TargetFrameworks>
-    <AssemblyName>RM.Razor.RuntimeCompilation</AssemblyName>
     <AddRazorSupportForMvc>true</AddRazorSupportForMvc>
-    <LangVersion>Latest</LangVersion>
+    <AssemblyName>RM.Razor.RuntimeCompilation</AssemblyName>
+    <RootNamespace>RM.Razor.RuntimeCompilation</RootNamespace>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <PackageId>RM.Razor.RuntimeCompilation</PackageId>
+    <Authors>Redmouse</Authors>
+    <Company>Redmouse</Company>
+    <Product>Redmouse</Product>
+    <Description>This package contains a multitenant Razor view engine runtime compilation</Description>
+    <Copyright>Redmouse</Copyright>
+    <PackageLicenseExpression>(MIT)</PackageLicenseExpression>
+    <PackageProjectUrl>https://github.com/oferns/RM.Razor</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/oferns/RM.Razor</RepositoryUrl>
+    <RepositoryType>GIT</RepositoryType>
+    <PackageTags>Redmouse razor</PackageTags>
+    <Nullable>annotations</Nullable>
+    <PublishRepositoryUrl>true</PublishRepositoryUrl>
+    <EmbedUntrackedSources>true</EmbedUntrackedSources>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <IncludeSymbols>true</IncludeSymbols>
+    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
 
 
   </PropertyGroup>

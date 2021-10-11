@@ -2,10 +2,27 @@
 
   <PropertyGroup>
     <TargetFrameworks>net5.0;net6.0</TargetFrameworks>
-    <AssemblyName>RM.Razor</AssemblyName>
     <AddRazorSupportForMvc>true</AddRazorSupportForMvc>
-    <LangVersion>Latest</LangVersion>
-
+    <AssemblyName>RM.Razor</AssemblyName>
+    <RootNamespace>RM.Razor</RootNamespace>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <PackageId>RM.Razor</PackageId>
+    <Authors>Redmouse</Authors>
+    <Company>Redmouse</Company>
+    <Product>Redmouse</Product>
+    <Description>This package contains a multitenant Razor view engine</Description>
+    <Copyright>Redmouse</Copyright>
+    <PackageLicenseExpression>(MIT)</PackageLicenseExpression>
+    <PackageProjectUrl>https://github.com/oferns/RM.Razor</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/oferns/RM.Razor</RepositoryUrl>
+    <RepositoryType>GIT</RepositoryType>
+    <PackageTags>Redmouse razor</PackageTags>
+    <Nullable>annotations</Nullable>
+    <PublishRepositoryUrl>true</PublishRepositoryUrl>
+    <EmbedUntrackedSources>true</EmbedUntrackedSources>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <IncludeSymbols>true</IncludeSymbols>
+    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
